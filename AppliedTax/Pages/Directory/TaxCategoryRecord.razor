@@ -1,0 +1,88 @@
+﻿@page "/Directory/TaxCategoryRecord"
+@page "/Directory/TaxCategoryRecord/{ID}"
+
+
+@using AppliedTax.Codes;
+@using System.Data;
+
+<h1>TaxCategory Record</h1>
+
+@code {
+    [Parameter]
+    public int ID { get; set; }
+    public Parameters Model { get; set; }
+    public TableClass MyTableClass => new TableClass("TaxCategory");
+    public DataRow MyRow { get; set; }
+
+
+    protected override void OnInitialized()
+    {
+        Model = new();
+        
+
+        if(ID==0) { ID = 1; }
+        MyRow = TableClass.GetRow("TaxCategory", ID);
+
+        Model.ID = (long)MyRow["ID"];
+        Model.Code = MyRow["Code"].ToString();
+        Model.Title = MyRow["Title"].ToString();
+        Model.Description = MyRow["Description"].ToString();
+    }
+
+
+
+
+
+    private void Submit()
+    {
+
+        var a = Model.Title;
+
+
+
+    }
+
+    
+
+    public class Parameters
+    {
+        public long ID { get; set; }
+        public string Code { get; set; }
+        public string Title { get; set; }
+        public string Description { get; set; }
+        public decimal Rate { get; set; }
+
+    }
+
+
+}
+
+<EditForm Model="@Model" OnSubmit="@Submit">
+    <div class="row">
+    <div class="col-md-2">
+        <label>Code</label>
+        <InputText @bind-Value="Model.Code" class="form-control" data-val="true" data-val-required="The Code field is required." id="txtCode" ></InputText>
+
+    </div>
+    <div class="col-md-2">
+        <label>Title</label>
+        <InputText @bind-Value="Model.Title" class="form-control" data-val="true" data-val-required="The Code field is required." id="txtTitle"></InputText>
+
+    </div>
+    </div>
+
+    <div class="row">
+    <div class="col-md-2">
+        <label>Description</label>
+        <InputText @bind-Value="Model.Description" class="form-control" data-val="true" data-val-required="The Description field is required." id="txtDescription"></InputText>
+
+    </div>
+    <div class="col-md-2">
+        <label>Rate</label>
+        <InputNumber @bind-Value="Model.Rate" class="form-control" data-val="true" data-val-required="The Rate field is required." id="txtRate"></InputNumber>
+    </div>
+    </div>
+    
+    <button type="submit" class="btn btn-primary mt-2">Submit</button>
+
+</EditForm>

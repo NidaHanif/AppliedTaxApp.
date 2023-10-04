@@ -1,0 +1,5 @@
+﻿
+SQLite framework.
+NuGet\Install-Package System.Data.SQLite.Core -Version 1.0.118
+==============================================================
+

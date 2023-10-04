@@ -1,0 +1,88 @@
+﻿@page "/Customer_Invoice/Invoice_Receivable"
+@using AppliedTax.Codes;
+@using System.Data;
+
+
+<h1>
+    Invoice Receivable
+</h1>
+
+
+@code {
+    public TableClass tb_Invoice = new("[Invoice]");
+}
+
+<div class="container">
+
+    <table class="custom-table">
+        <thead>
+            <tr>
+                @*<th scope="col">#</th>*@
+                @*<th scope="col">Inv Code</th>*@
+                
+                <th>Inv No.</th>
+                <th>Supplier Name</th>
+                <th>Inv Date</th>
+                <th>Payment Date</th>
+                <th>Qty</th>
+                <th>Rate</th>
+                <th>Amount</th>
+                <th>Tax Amount</th>
+                <th>Net Amount</th>
+                @*<th scope="col">Company id </th>
+                <th scope="col">PSID</th>
+                <th scope="col">TCID</th>
+                <th scope="col">Ord id</th>
+                <th scope="col">Quantity</th>
+                <th scope="col">Tax Code</th> *@
+                
+                
+                <th></th>
+                <th><button class="btn btn-light"><i class="bi bi-plus me-2"></i></button></th>
+                <th></th>
+
+            </tr>
+        </thead>
+        <tbody>
+
+            @foreach (DataRow Row in tb_Invoice.MyDataTable.Rows)
+            {
+                var Date1 = ((DateTime)Row["Invoice Date"]).ToString("dd-MMM-yyyy");
+                var Date2 = ((DateTime)Row["Payment Date"]).ToString("dd-MMM-yyyy");
+                var SupplierName = TableClass.GetTitle("Company", (long)Row["Company Id"]);
+
+                <tr>
+                    
+                    <td>@Row["Invoice Number"]</td>
+                    <td>@SupplierName</td>
+                    <td>@Date1</td>
+                    <td>@Date2</td>
+                    <td>@Row["Quantity"]</td>
+                    <td>@Row["Amount"]</td>
+                    <td>@Row["Rate"]</td>
+                    <td>@Row["Tax Amount"]</td>
+                    <td>@Row["Net Amount"]</td>
+                    @* d>@Row["Company Id"]</td> *@
+                    @* <td>@Row["PSID"]</td>
+                     <td>@Row["TCID"]</td>
+                     <td>@Row["Ord_Id"]</td>
+                     <td>@Row["Tax Code"]</td>*@
+
+                    <td>
+                        <a class="btn btn-danger" href="/Customer_Invoice/InvoiceReceivableRecord/@Row["Id"]"><i class="bi bi-pencil-fill me-2"></i></a>
+                    </td>
+
+                    <td><button class="btn btn-primary"><i class="bi bi-trash3-fill me-2"></i></button></td>
+
+                    <td>
+                        <a class="btn btn-secondary" href=""><i class="bi bi-printer-fill me-2"></i></a>
+                    </td>
+                    
+
+                </tr>
+
+            }
+        </tbody>
+        <tfoot>Footer</tfoot>
+    </table>
+</div>

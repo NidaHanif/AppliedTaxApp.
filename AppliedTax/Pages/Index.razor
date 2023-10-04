@@ -1,0 +1,23 @@
+﻿@page "/"
+@using System.Data.SQLite;
+@using System.Data;
+@using AppliedTax.Codes;
+
+@code {
+	public TableClass tb_Taxes = new("[Taxes]");
+}
+
+<PageTitle>Index</PageTitle>
+
+<h1>Hello, world!</h1>
+
+Welcome to your new app.
+
+<SurveyPrompt Title="How is Blazor working for you?" />
+
+@foreach (DataRow Row in tb_Taxes.MyDataTable.Rows)
+{
+	@Row["Title"]
+	<br />
+
+}
