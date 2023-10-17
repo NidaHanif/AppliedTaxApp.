@@ -1,0 +1,99 @@
+﻿@page "/Customer_Invoice/Invoice_Receivable"
+@using AppliedTax.Codes;
+@using System.Data;
+@using System.Data.SQLite;
+@using System.Text;
+
+
+<h1>
+    Invoice Receivable
+</h1>
+
+
+@code {
+    public TableClass tb_Invoice = new("[Invoice1]");
+
+
+    [Parameter]
+    public long InvID { get; set; }
+    public string MyMessage = String.Empty;
+
+
+
+    private void Delete(long ID)
+    {
+        if (ID > 0)
+        {
+
+            var TextDelete = "DELETE FROM [Invoice] WHERE [ID] = @ID";
+            var SQLCommand = new SQLiteCommand(TextDelete, ConnectionClass.GetConnected());
+            SQLCommand.Parameters.AddWithValue("@ID", ID);
+            var effected = SQLCommand.ExecuteNonQuery();
+            if (effected > 0)
+            {
+                MyMessage = "Record has been deleted successfully";
+            }
+            else
+            {
+                MyMessage = "Record not deleted.";
+            }
+        }
+        else
+        {
+            MyMessage = "Value id not more than zero";
+        }
+    }
+}
+
+<div class="container">
+
+    <table class="custom-table">
+        <thead>
+            <tr>
+                <th>Inv No.</th>
+                <th>Supplier Name</th>
+                <th>Inv Date</th>
+                <th>Payment Date</th>
+                <th>Qty</th>
+                <th>Amount</th>
+                <th>Tax Amount</th>
+                <th>Net Amount</th>
+
+                <th><button class="btn btn-light" style="width:20%"><i class="bi bi-plus me-2"></i></button></th>
+            </tr>
+        </thead>
+        <tbody>
+
+            @foreach (DataRow Row in tb_Invoice.MyDataTable.Rows)
+            {
+                var Date1 = ((DateTime)Row["Invoice Date"]).ToString("dd-MMM-yyyy");
+                var Date2 = ((DateTime)Row["Payment Date"]).ToString("dd-MMM-yyyy");
+                var SupplierName = TableClass.GetTitle("Company", (long)Row["Company Id"]);
+                var Quantity = ((long)Row["Quantity"]).ToString("###,###,###.##");
+                var Amount = ((long)Row["Amount"]).ToString("###,###,###,###");
+                var TaxAmount = ((long)Row["Tax Amount"]).ToString("###,###,###,###");
+                var NetAmount = ((long)Row["Net Amount"]).ToString("###,###,###,###");
+                <tr>
+                    
+                    <td>@Row["Invoice Number"]</td>
+                    <td>@SupplierName</td>
+                    <td>@Date1</td>
+                    <td>@Date2</td>
+                    <td style="text-align:right; padding-right: 20px;">@Quantity</td>
+                    <td style="text-align:right; padding-right: 20px;">@Amount</td>
+                    <td style="text-align:right; padding-right: 20px;">@TaxAmount</td>
+                    <td style="text-align:right; padding-right: 20px;">@NetAmount</td>
+                    <td>
+                        <a class="btn btn-danger" style="width:20%" href="/Customer_Invoice/InvoiceReceivableRecord/@Row["Invoice Code"]"><i class="bi bi-pencil-fill me-2"></i></a>
+                        <button type="submit" @onclick='() => Delete((long)Row["ID"])' class="btn btn-primary" style="width:20%"><i class="bi bi-trash3-fill me-2"></i></button>
+                        <a class="btn btn-success" style="width:20%" href=""><i class="bi bi-printer-fill me-2"></i></a>
+                    </td>
+                    
+
+                </tr>
+
+            }
+        </tbody>
+        <tfoot></tfoot>
+    </table>
+</div>

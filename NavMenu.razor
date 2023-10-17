@@ -1,0 +1,89 @@
+﻿@*<div class="top-row ps-3 navbar navbar-dark">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="">AppliedTax</a>
+        <button title="Navigation menu" class="navbar-toggler" @onclick="ToggleNavMenu">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+    </div>
+</div>
+
+<div class="@NavMenuCssClass" @onclick="ToggleNavMenu">
+    <nav class="flex-column">
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
+                <span class="oi oi-home" aria-hidden="true"></span> Home
+            </NavLink>
+        </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="counter">
+                <span class="oi oi-plus" aria-hidden="true"></span> Counter
+            </NavLink>
+        </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="fetchdata">
+                <span class="oi oi-list-rich" aria-hidden="true"></span> Fetch data
+            </NavLink>
+        </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="fetchdata">
+                <span class="oi oi-list-rich" aria-hidden="true"></span> Fetch data
+            </NavLink>
+        </div>
+    </nav>
+</div>
+
+@code {
+    private bool collapseNavMenu = true;
+
+    private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;
+
+    private void ToggleNavMenu()
+    {
+        collapseNavMenu = !collapseNavMenu;
+    }
+}*@
+<nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow p-0">
+    <div class="container-fluid" style="background: skyblue;">
+        <a class="navbar-brand" asp-page="/Index">Applied Tax</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+            <ul class="navbar-nav flex-grow-1" atyle="margin:6px; padding:6px;">
+                
+                <li class="nav-item">
+                    <a href="/" class="nav-link active">Home</a>
+                </li>
+            
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="true" style="background-color:rgba(255,255,255,0.25); color:black">
+                        Directory
+                    </a>
+                    <div class="dropdown-content">
+                        <a href="/Directory/Product">Product</a>
+                        <a href="/Directory/Taxes">Taxes</a>
+                        <a href="/Directory/TaxPayer">Tax Payers</a>
+                        <a href="/Directory/TaxCategory">Tax Category</a>
+                    </div>
+                </li>
+
+
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="true" style="background-color:rgba(255,255,255,0.25); color:black">
+                        Customer Invoice
+                    </a>
+                    <div class="dropdown-content" style="width:100%;">
+                        <a href="/Customer_Invoice/InvoicePayable">Invoice Payable</a>
+                        <a href="/Customer_Invoice/Invoice_Receivable">Invoice Receivable</a>
+                    </div>
+
+                </li>
+                <li class="nav-item">
+                    <a href="" class="nav-link active">Tax Submission</a>
+                </li>
+                
+            </ul>
+            
+        </div>
+    </div>
+</nav>

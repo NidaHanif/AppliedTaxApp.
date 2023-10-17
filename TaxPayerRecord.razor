@@ -1,0 +1,112 @@
+﻿@page "/Directory/TaxPayerRecord"
+@page "/Directory/TaxPayerRecord/{ID:long}"
+
+
+@using AppliedTax.Codes;
+@using System.Data;
+
+<h1>Tax Payer Record</h1>
+
+@code {
+    [Parameter]
+    public int ID { get; set; }
+    public Parameters Model { get; set; }
+    public TableClass MyTableClass => new TableClass("TaxPayers");
+    public DataRow MyRow { get; set; }
+
+
+    protected override void OnInitialized()
+    {
+        Model = new();
+
+
+        if (ID == 0) { ID = 1; }
+        MyRow = TableClass.GetRow("TaxPayers", ID);
+
+        Model.ID = (long)MyRow["ID"];
+        Model.Code = MyRow["Code"].ToString();
+        Model.Name = MyRow["Title"].ToString();
+        Model.Address = MyRow["Address"].ToString();
+        Model.Contact = (long)MyRow["Contact Number"];
+        Model.NTN = (long)MyRow["NTN Number"];
+        Model.Country = MyRow["Country"].ToString();
+        Model.City = MyRow["City"].ToString();
+
+    }
+
+
+
+
+
+    private void Submit()
+    {
+
+        var a = Model.Name;
+
+
+
+    }
+
+
+
+    public class Parameters
+    {
+        public long ID { get; set; }
+        public string Code { get; set; }
+        public string Name { get; set; }
+        public string Address { get; set; }
+        public long Contact { get; set; }
+        public long NTN { get; set; }
+        public string Country { get; set; }
+        public string City { get; set; }
+
+    }
+
+
+}
+
+<EditForm Model="@Model" OnSubmit="@Submit">
+    <div class="row">
+    <div class="col-md-2">
+        <label>Code</label>
+        <InputText @bind-Value="Model.Code" class="form-control" data-val="true" data-val-required="The Code field is required." id="txtCode"></InputText>
+
+    </div>
+    <div class="col-md-2">
+        <label>Name</label>
+        <InputText @bind-Value="Model.Name" class="form-control" data-val="true" data-val-required="The Name field is required." id="txtName"></InputText>
+
+    </div>
+    </div>
+
+    <div class="row">
+    <div class="col-md-5">
+        <label>Address</label>
+        <InputText @bind-Value="Model.Address" class="form-control" data-val="true" data-val-required="The Address field is required." id="txtAddress"></InputText>
+
+    </div>
+
+
+    <div class="col-md-3">
+        <label>Contact Number</label>
+        <InputNumber @bind-Value="Model.Contact" class="form-control" data-val="true" data-val-required="The Country field is required." id="txtCountry"></InputNumber>
+
+    </div>
+    </div>
+
+    <div class="row">
+    <div class="col-md-2">
+        <label>City</label>
+        <InputText @bind-Value="Model.City" class="form-control" data-val="true" data-val-required="The City field is required." id="txtCity"></InputText>
+
+    </div>
+    <div class="col-md-2">
+        <label>Country</label>
+        <InputText @bind-Value="Model.Country" class="form-control" data-val="true" data-val-required="The Country field is required." id="txtCountry"></InputText>
+    </div>
+    </div>
+
+
+    <button type="submit" class="btn btn-primary mt-2">Submit</button>
+
+</EditForm>

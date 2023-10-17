@@ -1,0 +1,40 @@
+﻿@page "/Directory/TaxCategory"
+@using AppliedTax.Codes;
+@using System.Data;
+
+<h1>
+    Tax Category Rate
+</h1>
+
+@code {
+    public TableClass tb_Taxes = new("[TaxCategory]");
+
+}
+
+<div class="container">
+    <table class="custom-table">
+        <thead>
+            <tr>
+                <th>Code</th>
+                <th>Title</th>
+                <th>Description</th>
+                <th></th>
+                <th><button class="btn btn-light"><i class="bi bi-plus me-2"></i>Add</button></th>
+            </tr>
+        </thead>
+        <tbody>
+
+            @foreach (DataRow Row in tb_Taxes.MyDataTable.Rows)
+            {
+                <tr>
+                    <td>@Row["Code"]</td>
+                    <td>@Row["Title"]</td>
+                    <td>@Row["Description"]</td>
+                    <td><a class="btn btn-danger" href="/Directory/TaxCategoryRecord"><i class="bi bi-pencil me-2"></i>Edit</a></td>
+                    <td><button class="btn btn-primary"><i class="bi bi-trash3 me-2"></i>Delete</button></td>
+                </tr>
+            }
+        </tbody>
+        <tfoot></tfoot>
+    </table>
+</div>
