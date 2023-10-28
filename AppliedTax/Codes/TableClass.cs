@@ -18,12 +18,14 @@ namespace AppliedTax.Codes
             MyConnection = ConnectionClass.GetConnected();
             MyDataTable = new DataTable();
             TableName = string.Empty;
+            MyDataView = new DataView();
         }
 
         // Constructor
         public TableClass(string TableName)
         {
             MyDataTable = new DataTable();
+            
             MyConnection = ConnectionClass.GetConnected();
             string Text = $"SELECT * FROM {TableName}";
             SQLiteCommand _Command = new(Text, MyConnection);
@@ -39,11 +41,11 @@ namespace AppliedTax.Codes
             }
         }
 
-        public static DataRow GetRow(string TableName, int RecordID)
+        public static DataRow GetRow(string TableName, int ID)
         {
-            TableClass _TableClass = new (TableName);
-            _TableClass.MyDataView.RowFilter = $"ID={RecordID}";
-            if(_TableClass.MyDataView.Count==1)
+            TableClass _TableClass = new(TableName);
+            _TableClass.MyDataView.RowFilter = $"[ID]={ID}";
+            if (_TableClass.MyDataView.Count == 1)
             {
                 return _TableClass.MyDataView[0].Row;
             }
@@ -51,11 +53,11 @@ namespace AppliedTax.Codes
             return _TableClass.MyDataTable.NewRow();
         }
 
-        public static DataRow GetRow(string TableName, long RecordID)
+        public static DataRow GetRow(string TableName, string RecordCode)
         {
             TableClass _TableClass = new(TableName);
-            _TableClass.MyDataView.RowFilter = $"ID={RecordID}";
-            if (_TableClass.MyDataView.Count == 1)
+            _TableClass.MyDataView.RowFilter = $"[Invoice Code]='{RecordCode}'";
+            if (_TableClass.MyDataView.Count > 0)
             {
                 return _TableClass.MyDataView[0].Row;
             }

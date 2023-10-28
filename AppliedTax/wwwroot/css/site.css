@@ -18,12 +18,63 @@ a, .btn-link {
     color: #0071c1;
 }
 
-.btn-primary {
-    color: #fff;
-    background-color: #1b6ec2;
-    border-color: #1861ac;
+
+.btn-section {
+
+    padding-bottom:1.1rem;
+    justify-content: center;
+    align-items: center;
+    position:relative;
+    
 }
 
+.btn-primary {
+    width: 100px;
+    padding: 10px 20px;
+    border: none;
+    cursor: pointer;
+    margin: 5px;
+}
+.btn-success {
+    width: 100px;
+    padding: 10px 20px;
+    border: none;
+    cursor: pointer;
+    margin: 5px;
+}
+.btn-warning {
+    width: 100px;
+    padding: 10px 20px;
+    border: none;
+    cursor: pointer;
+    margin: 5px;
+}
+.btn-danger {
+    width: 100px;
+    padding: 10px 20px;
+    border: none;
+    cursor: pointer;
+    margin: 5px;
+}
+.btn-info {
+    width: 100px;
+    padding: 10px 20px;
+    border: none;
+    cursor: pointer;
+    margin: 5px;
+}
+.btn-secondary {
+    width: 100px;
+    padding: 10px 20px;
+    border: none;
+    cursor: pointer;
+    margin: 5px;
+}
+.btn-By {
+    background-color: lightgreen;
+    color: black;
+    width: 60px;
+}
 
 .content {
     padding-top: 1.1rem;
@@ -71,33 +122,39 @@ a, .btn-link {
     }
 
 
-    /* Table */
+
+
+/* Table */
 .custom-table {
     width: 100%;
     border-collapse: collapse;
     border: 1px solid #005a3f;
-
 }
 
     .custom-table th, .custom-table td {
         padding: 8px;
         text-align: left;
         border-bottom: dotted 1px grey;
-        
     }
 
     .custom-table th {
-        background-color: black;
+        background-color: #176B87;
         color: white;
     }
 
-    .custom-table td {
-        background-color: #E6D3A3;
+    .custom-table tr {
+        background-color: #D4E6F1;
     }
 
-    .custom-table tr:hover {
-        background-color: red;
+    .custom-table tfoot tr{
+        background-color: lightskyblue;
+        color: darkmagenta;
+        font-weight:bold;
     }
+    .custom-table tbody tr:hover {
+        background-color: lightgreen;
+    }
+
 
 
 
@@ -108,9 +165,8 @@ a, .btn-link {
 
 .col-md-2 input {
     width: 100%;
-    padding: 10px; 
-    border: 1px solid grey; 
-    border-radius: 15px; 
+    padding:10px;
+    border: 1px solid grey;  
     outline: none; 
 }
 

@@ -10,10 +10,16 @@
   <ItemGroup>
     <Folder Include="Pages\Taxes\" />
     <Folder Include="wwwroot\DataBase\" />
+    <Folder Include="wwwroot\PrintReports\" />
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="ReportViewerCore.NETCore" Version="15.1.18" />
     <PackageReference Include="System.Data.SQLite" Version="1.0.118" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\AppReporting\AppReportClass.csproj" />
   </ItemGroup>
 
 </Project>
