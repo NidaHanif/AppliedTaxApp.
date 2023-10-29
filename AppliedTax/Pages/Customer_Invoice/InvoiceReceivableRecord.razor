@@ -1,10 +1,11 @@
 ﻿@page "/Customer_Invoice/InvoiceReceivableRecord/{InvCode}"
-
+@using System.IO;
 @using AppliedTax.Codes;
 @using System.Data;
 @using System.Data.SQLite;
 @using System.Text;
 @using AppReportClass;
+@using Microsoft.Reporting.NETCore;
 @inject NavigationManager _navigationManager
 
 <h1>Invoice Receivable Record</h1>
@@ -210,23 +211,37 @@
     {
         DataTable _Table = new();
         ReportParameters rptParameters = new();
-        rptParameters.ReportPath = "/Reports/";
+        List<ReportParameter> _Parameters = new List<ReportParameter>
+        {
+                new ReportParameter("CompanyName", "Applied Software House"),
+                new ReportParameter("Heading1", CompanyTitle),
+                new ReportParameter("Heading2", "Sales Tax Invocies"),
+                new ReportParameter("Footer", "Powered by Applied Software House"),
+                new ReportParameter("InvoiceCode", InvCode)
+        };
+
+        rptParameters.ReportPath = $"{Directory.GetCurrentDirectory()}\\wwwroot\\Reports\\";
         rptParameters.ReportFile = "TaxSample.rdl";
-        rptParameters.ReportType = ReportType.PDF;
-        rptParameters.OutputFile = "TaxSample";
-        rptParameters.OutputPath = "~/PrintReports/";
-        rptParameters.ReportData = _Table;
-        rptParameters.DataSetName = "";
+        rptParameters.ReportType = ReportType.Preview;
 
+        rptParameters.OutputFile = "TaxSample";                                                         // Do not Add Extention Type with File name.
+        rptParameters.OutputPath = $"{Directory.GetCurrentDirectory()}\\wwwroot\\PrintReports\\";
 
-        
+        rptParameters.ReportData = Myinvoice;
+        rptParameters.DataSetName = "DataSet2";
 
-    var ReportExport = new ExportReport(rptParameters);
-        ReportExport.Render();
+        rptParameters.DataParameters = _Parameters;
 
+        var ReportExport = new ExportReport(rptParameters);
 
-
-
+        if (File.Exists($"{rptParameters.ReportPath}{rptParameters.ReportFile}"))
+        {
+            ReportExport.Render();
+        }
+        else
+        {
+            MyMessage = "Report Not found to print";
+        }
 
     }
 

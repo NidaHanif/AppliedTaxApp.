@@ -19,7 +19,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\AppReporting\AppReportClass.csproj" />
+    <ProjectReference Include="..\AppReporting\AppReportClass.csproj" />
   </ItemGroup>
 
 </Project>
