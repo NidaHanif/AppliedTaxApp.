@@ -17,7 +17,6 @@
     <table class="custom-table">
         <thead>
             <tr>
-                @*<th scope="col">#</th>*@
                 <th>Code</th>
                 <th>Title</th>
                 <th>Class</th>
@@ -31,7 +30,6 @@
             @foreach (DataRow Row in tb_Taxes.MyDataTable.Rows)
             {
                 <tr>
-                    @*<th scope="row">1</th>*@
                     <td>@Row["Code"]</td>
                     <td>@Row["Title"]</td>
                     <td>@Row["Class"]</td>
@@ -42,6 +40,6 @@
                 
             }
         </tbody>
-        <tfoot>Footer</tfoot>
+        <tfoot></tfoot>
     </table>
 </div>

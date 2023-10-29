@@ -14,11 +14,9 @@
     public TableClass MyTableClass => new TableClass("Product");
     public DataRow MyRow { get; set; }
 
-
     protected override void OnInitialized()
     {
         Model = new();
-
 
         if(ID==0) { ID = 1; }
         MyRow = TableClass.GetRow("Product", ID);
@@ -33,18 +31,10 @@
         Model.HSCode = MyRow["HSCode"].ToString();
 
     }
-
-
     private void Submit()
     {
-
         var a = Model.Title;
-
-
-
     }
-
-    
 
     public class Parameters
     {
@@ -67,7 +57,6 @@
     <div class="col-md-2">
         <label>Code</label>
         <InputText @bind-Value="Model.Code" class="form-control" data-val="true" data-val-required="The Code field is required." id="txtCode" ></InputText>
-
     </div>
     <div class="col-md-2">
         <label>Title</label>
@@ -76,89 +65,27 @@
     <div class="col-md-2">
         <label>Class</label>
         <InputText @bind-Value="Model.Class" class="form-control" data-val="true" data-val-required="The Class field is required." id="txtClass"></InputText>
-
     </div>
     </div>
-
     <div class="row">
     <div class="col-md-2">
         <label>Unit</label>
         <InputNumber @bind-Value="Model.Unit" class="form-control" data-val="true" data-val-required="The Unit field is required." id="txtUnit"></InputNumber>
-
     </div>
-    
     <div class="col-md-2">
         <label>Description</label>
         <InputText @bind-Value="Model.Description" class="form-control" data-val="true" data-val-required="The Description field is required." id="txtDescription"></InputText>
 
     </div>
-
     <div class="col-md-2">
         <label>TC_ID</label>
         <InputNumber @bind-Value="Model.TC_ID" class="form-control" data-val="true" data-val-required="The TC_ID field is required." id="txtTC_ID"></InputNumber>
-
     </div>
     </div>
-    
     <div class="col-md-2">
         <label>HSCode</label>
         <InputText @bind-Value="Model.HSCode" class="form-control" data-val="true" data-val-required="The HSCode field is required." id="txtHSCode"></InputText>
     </div>
-
-
     <button type="button" class="btn btn-primary">Submit</button>.
 
 </EditForm>
-
-
-@*
-<form method="post">
-    <div class="container p-3">
-        <div class="row g-3">
-
-
-            <div class="col-md-2">
-                <label>Code</label>
-                <input type="text" class="form-control" data-val="true" data-val-required="The Code field is required." id="Record_Code" name="Record.Code" value="101002">
-
-            </div>
-            <div class="col-sm-8">
-                <label>Title</label>
-                <input type="text" class="form-control" data-val="true" data-val-required="The Title field is required." id="Record_Title" name="Record.Title" value="">
-            </div>
-            <div class="col-sm-2">
-                <label>Rate</label>
-                <input type="text" class="form-control" data-val="true" data-val-number="The field RATE must be a number." data-val-required="The RATE field is required." id="Record_RATE" name="Record.RATE" value="0">
-            </div>
-        </div>
-    </div>
-
-    <div class="container p-3">
-        <div class="row g-3 ">
-            <div class="input-group mb-3">
-                <label class="input-group-text g-2">Directories</label>
-                <select class="form-select" data-val="true" data-val-required="The Class field is required." id="Record_Class" name="Record.Class">
-                    <option selected=""></option>
-                    <option value="1"> Product </option>
-                    <option value="2"> Tax Category </option>
-                    <option value="3"> Taxes </option>
-                    <option value="4"> Tax Payer </option>
-                </select>
-            </div>
-            <div class="col-sm-8">
-                <label>Description</label>
-                <input type="text" class="form-control" data-val="true" data-val-required="The Title field is required." id="Record_Title" name="Record.Title" value="">
-            </div>
-        </div>
-    </div>
-
-    <div class="container p-3">
-        <input type="text" name="ID" hidden="" data-val="true" data-val-required="The ID field is required." id="Record_ID" value="76">
-        <div class="row">
-            <div class="col-1"> <input class="btn btn-success" type="submit" value="Save" formaction="/Accounts/AccountHead?handler=Save"></div>
-            <div class="col-1"> <input class="btn btn-primary" type="submit" value="Back" formaction="/Accounts/Directory/COA"></div>
-        </div>
-
-    </div>
-</form>
-*@

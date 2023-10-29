@@ -1,9 +1,11 @@
-﻿@page "/Customer_Invoice/InvoiceReceivableRecord/{InvID:long}"
+﻿@page "/Customer_Invoice/InvoiceReceivableRecord/{InvCode}"
 
 @using AppliedTax.Codes;
 @using System.Data;
 @using System.Data.SQLite;
 @using System.Text;
+@using AppReportClass;
+@inject NavigationManager _navigationManager
 
 <h1>Invoice Receivable Record</h1>
 
@@ -11,13 +13,17 @@
 
     public TableClass tb_Invoice = new("[Invoice]");
     public DataTable Myinvoice;
-    decimal Amount = 0;
-    decimal TaxAmount = 0;
-    decimal NetAmount = 0;
+    decimal Amount = 0.00M;
+    decimal TaxAmount = 0.00M;
+    decimal NetAmount = 0.00M;
+    decimal TotQty = 0.00M;
+    decimal TotRate = 0.00M;
+    decimal TotAmount = 0.00M;
+    decimal TotTaxAmount = 0.00M;
 
 
     [Parameter]
-    public long InvID { get; set; }
+    public string InvCode { get; set; }
     public Parameters Model { get; set; }
     public string TableName = "Invoice";
     public string MyMessage = String.Empty;
@@ -30,10 +36,55 @@
     public string CompanyTitle { get; set; }
     public string TaxTitle { get; set; }
 
+
+
+    protected override void OnInitialized()
+    {
+        if (InvCode.Length == 0) { InvCode = string.Empty; }
+        MyRow = TableClass.GetRow(TableName, InvCode);
+        Model = new();
+
+        if (MyRow != null)
+        {
+            if (MyRow["ID"] != DBNull.Value)
+            {
+                Model = new()
+                    {
+                        ID = (long)MyRow["ID"],
+                        InvoiceCode = (string)MyRow["Invoice Code"],
+                        InvoiceNumber = (string)MyRow["Invoice Number"],
+                        InvoiceDate = (DateTime)MyRow["Invoice Date"],
+                        PaymentDate = (DateTime)MyRow["Payment Date"],
+                        Inventory = (long)MyRow["Inventory"],
+                        Quantity = (long)MyRow["Quantity"],
+                        Amount = (decimal)MyRow["Amount"],
+                        Rate = (decimal)MyRow["Rate"],
+                        TaxAmount = (decimal)MyRow["Tax Amount"],
+                        NetAmount = (decimal)MyRow["Net Amount"],
+                        CompanyID = (long)MyRow["Company Id"],
+                        PSID = (long)MyRow["PSID"],
+                        TCID = (long)MyRow["TCID"],
+                        OrdID = (long)MyRow["Ord_ID"],
+                        TaxID = (long)MyRow["TaxID"]
+                    };
+
+                InventoryTitle = TableClass.GetTitle("Product", Model.Inventory);
+                CompanyTitle = TableClass.GetTitle("Company", (long)MyRow["Company Id"]);
+                TaxTitle = TableClass.GetTitle("Taxes", (long)MyRow["TaxID"]);
+                Myinvoice = GetInvoice();
+                TotQty = Convert.ToDecimal(Myinvoice.Compute("SUM(Quantity)", ""));
+                TotRate = (decimal)Myinvoice.Compute("SUM(Rate)", "");
+                TotAmount = (decimal)Myinvoice.Compute("SUM(Amount)", "");
+
+            }
+        }
+    }
+
     private DataTable GetInvoice()
     {
+        tb_Invoice = new("Invoice");
         tb_Invoice.MyDataView.RowFilter = $"[Invoice Code] = '{Model.InvoiceCode}'";
-        if(tb_Invoice.MyDataView.Count>0)
+        if (tb_Invoice.MyDataView.Count > 0)
         {
             return tb_Invoice.MyDataView.ToTable();
         }
@@ -54,8 +105,6 @@
         _Table.MyDataView.RowFilter = _Filter;
         if (_Table.MyDataView.Count == 1)
         {
-
-
             var _Command = new SQLiteCommand(ConnectionClass.GetConnected());
             var _Text = new StringBuilder();
             _Text.Append($"UPDATE [{_TableName}] SET ");
@@ -87,12 +136,12 @@
         }
         else
         {
-            var _MAXID = (int)tb_Invoice.MyDataTable.Compute("MAX(Id)", "") + 1;
+            var _MAXID = (long)tb_Invoice.MyDataTable.Compute("MAX(Id)", "") + 1;
             var _Command = new SQLiteCommand(ConnectionClass.GetConnected());
             var _Text = new StringBuilder();
             _Text.Append($"INSERT INTO [{_TableName}] VALUES ({_MAXID},");
-            _Text.Append($"{MyRow["Invoice Code"]},");
-            _Text.Append($"{MyRow["Invoice Number"]},");
+            _Text.Append($"'{MyRow["Invoice Code"]}',");
+            _Text.Append($"'{MyRow["Invoice Number"]}',");
             _Text.Append($"'{_Date1}',");
             _Text.Append($"'{_Date2}',");
             _Text.Append($"{MyRow["Inventory"]},");
@@ -105,44 +154,84 @@
             _Text.Append($"{MyRow["PSID"]},");
             _Text.Append($"{MyRow["TCID"]},");
             _Text.Append($"{MyRow["Ord_Id"]},");
-            _Text.Append($"{MyRow["TaxID"]}");
+            _Text.Append($"{MyRow["TaxID"]})");
 
-
-
-            _Text.Append($" WHERE [id]={_ID}");
-
-            _Command = new(_Text.ToString(), ConnectionClass.GetConnected());
-                _Effected = _Command.ExecuteNonQuery();
-            if (_Effected > 0)
+            try
             {
-                MyMessage = $"{_Effected} Row(s) effected inserted successfully.";
+                _Command = new(_Text.ToString(), ConnectionClass.GetConnected());
+                _Effected = _Command.ExecuteNonQuery();
+                if (_Effected > 0)
+                {
+                    MyMessage = $"{_Effected} Row(s) effected inserted successfully.";
+                }
             }
+            catch (Exception e)
+            {
+                MyMessage = e.Message;
 
+            }
         }
 
         Myinvoice = GetInvoice();
+        //NevigateToYourUrl();
+        //OnInitialized();
+    }
 
-        MyMessage = "";
+    private void Delete(long ID)
+    {
+        if (ID > 0)
+        {
+
+            var TextDelete = "DELETE FROM [Invoice] WHERE [ID] = @ID";
+            var SQLCommand = new SQLiteCommand(TextDelete, ConnectionClass.GetConnected());
+            SQLCommand.Parameters.AddWithValue("@ID", ID);
+            var effected = SQLCommand.ExecuteNonQuery();
+            if (effected > 0)
+            {
+                Myinvoice = GetInvoice();
+                if (Myinvoice.Rows.Count == 0)
+                {
+                    _navigationManager.NavigateTo("/Customer_Invoice/Invoice_Receivable");
+
+                }
+                MyMessage = "Record has been deleted successfully";
+            }
+            else
+            {
+                MyMessage = "Record not deleted.";
+            }
+        }
+        else
+        {
+            MyMessage = "Value id not more than zero";
+        }
+    }
+    private void Print()
+    {
+        DataTable _Table = new();
+        ReportParameters rptParameters = new();
+        rptParameters.ReportPath = "/Reports/";
+        rptParameters.ReportFile = "TaxSample.rdl";
+        rptParameters.ReportType = ReportType.PDF;
+        rptParameters.OutputFile = "TaxSample";
+        rptParameters.OutputPath = "~/PrintReports/";
+        rptParameters.ReportData = _Table;
+        rptParameters.DataSetName = "";
+
+
+        
+
+    var ReportExport = new ExportReport(rptParameters);
+        ReportExport.Render();
+
+
+
+
+
     }
 
     private void Add()
     {
-        // DataRow AddRow = tb_Invoice.MyDataTable.NewRow();
-
-        // AddRow["ID"] = 0;
-        // AddRow["Invoice Code"] = Model.InvoiceCode;
-        // AddRow["Invoice Date"] = Model.InvoiceDate;
-        // AddRow["Invoice Number"] = Model.InvoiceNumber;
-        // AddRow["Payment Date"] = Model.PaymentDate;
-        // AddRow["Inventory"] = 0;
-        // AddRow["Qty"] = 0;
-        // AddRow["Rate"] = 0.00M;
-        // AddRow["Amount"] = 0.00M;
-        // AddRow["Tax Amount"] = 0.00M;
-        // AddRow["Net Amount"] = 0.00M;
-
-        // MyRow = AddRow;
-
         Model.ID = 0;
         Model.Inventory = 0;
         Model.Quantity = 0;
@@ -151,9 +240,7 @@
         Model.TaxID = 0;
         Model.TaxAmount = 0.00m;
         Model.NetAmount = 0.00m;
-
-
-
+        InventoryTitle = "";
 
     }
 
@@ -178,46 +265,6 @@
 
     }
 
-
-    protected override void OnInitialized()
-    {
-        if (InvID == 0) { InvID = 1; }
-        MyRow = TableClass.GetRow(TableName, InvID);
-        Model = new();
-
-        if (MyRow != null)
-        {
-            if (MyRow["ID"] != DBNull.Value)
-            {
-                Model = new()
-                    {
-                        ID = (long)MyRow["ID"],
-                        InvoiceCode = (string)MyRow["Invoice Code"],
-                        InvoiceNumber = (string)MyRow["Invoice Number"],
-                        InvoiceDate = (DateTime)MyRow["Invoice Date"],
-                        PaymentDate = (DateTime)MyRow["Payment Date"],
-                        Inventory = (long)MyRow["Inventory"],
-                        Quantity = (long)MyRow["Quantity"],
-                        Amount = (decimal)MyRow["Amount"],
-                        Rate = (decimal)MyRow["Rate"],
-                        TaxAmount = (decimal)MyRow["Tax Amount"],
-                        NetAmount = (decimal)MyRow["Net Amount"],
-                        CompanyID = (long)MyRow["Company Id"],
-                        PSID = (long)MyRow["PSID"],
-                        TCID = (long)MyRow["TCID"],
-                        OrdID = (long)MyRow["Ord_ID"],
-                        TaxID = (long)MyRow["TaxID"]
-                    };
-
-                InventoryTitle = TableClass.GetTitle("Product", Model.Inventory);
-                CompanyTitle = TableClass.GetTitle("Company", (long)MyRow["Company Id"]);
-                TaxTitle = TableClass.GetTitle("Taxes", (long)MyRow["TaxID"]);
-                Myinvoice = GetInvoice();
-
-            }
-        }
-    }
-
     private void Submit()
     {
         var a = Model.InvoiceNumber;
@@ -230,6 +277,37 @@
         Model.NetAmount = Model.Amount + Model.TaxAmount;
     }
 
+    private void Edit(long ID)
+    {
+        tb_Invoice.MyDataView.RowFilter = $"ID={ID}";
+        if (tb_Invoice.MyDataView.Count == 1)
+        {
+            MyRow = tb_Invoice.MyDataView[0].Row;
+            Model = new()
+                {
+                    ID = (long)MyRow["ID"],
+                    InvoiceCode = (string)MyRow["Invoice Code"],
+                    InvoiceNumber = (string)MyRow["Invoice Number"],
+                    InvoiceDate = (DateTime)MyRow["Invoice Date"],
+                    PaymentDate = (DateTime)MyRow["Payment Date"],
+                    Inventory = (long)MyRow["Inventory"],
+                    Quantity = (long)MyRow["Quantity"],
+                    Amount = (decimal)MyRow["Amount"],
+                    Rate = (decimal)MyRow["Rate"],
+                    TaxAmount = (decimal)MyRow["Tax Amount"],
+                    NetAmount = (decimal)MyRow["Net Amount"],
+                    CompanyID = (long)MyRow["Company Id"],
+                    PSID = (long)MyRow["PSID"],
+                    TCID = (long)MyRow["TCID"],
+                    OrdID = (long)MyRow["Ord_ID"],
+                    TaxID = (long)MyRow["TaxID"]
+                };
+        }
+        else
+        {
+            MyMessage = "Record not Found";
+        }
+    }
 
     #region Variables
     public class Parameters
@@ -254,30 +332,21 @@
     }
     #endregion
 
-
-
-
-
-
-
 }
 
 
 
-
-
-
-
+@MyMessage;
 
 <div class="container">
-    <div class="row">
-        <EditForm Model="@Model" OnSubmit="@Submit">
-
-            <div class="col-md-7">
+    <EditForm Model="@Model" OnSubmit="@Submit">
+        <input hidden id="txtID" @bind-value="@Model.ID" />
+        <div class="row mt-2">
+            <div class="col-md-12">
                 <input hidden id="txtID" />
-                <div class="input-group mb-3">
+                <div class="input-group">
                     <label class="input-group-text" for="inputGroupSelect01">Customer Name</label>
-                    <select class="form-select" id="inputGroupSelect01">
+                    <select class="form-select" id="inputGroupSelect01" @bind="@Model.CompanyID">
                         <option selected>@CompanyTitle</option>
                         @foreach (DataRow Row in CustomerName.Rows)
                         {
@@ -286,105 +355,108 @@
                     </select>
                 </div>
             </div>
-
-                <div class="row">
-                    <div class="col-md-2">
-                        <label>Invoice Code</label>
-                        <InputText @bind-Value="Model.InvoiceCode" class="form-control" data-val="true" data-val-required="The InvoiceCode field is required." id="txtCode"></InputText>
-
-                    </div>
-
-                    <div class="col-md-2">
-                        <label>Invoice Number</label>
-                        <InputText @bind-Value="Model.InvoiceNumber" class="form-control" data-val="true" data-val-required="The InvoiceNumber field is required." id="txtNumber"></InputText>
-
-                    </div>
-
-                <div class="col-md-2">
-                    <label>Invoice Date</label>
-                    <InputDate @bind-Value="Model.InvoiceDate" class="form-control" data-val="true" data-val-required="The InvoiceDate field is required." id="txtDate"></InputDate>
-
-                </div>
-                <div class="col-md-2">
-                    <label>Payment Date</label>
-                    <InputDate @bind-Value="Model.PaymentDate" class="form-control" data-val="true" data-val-required="The PaymentDate field is required." id="txtDate"></InputDate>
-                </div>
-            </div>
-
-            
-            <div class="row">
-                <div class="col-md-4">
-                    <input hidden id="txtID" />
-                    <div class="input-group mb-3 mt-4">
-                        <label class="input-group-text" for="inputGroupSelect01">Inventory</label>
-                        <select class="form-select" id="inputGroupSelect01">
-                            <option selected>@InventoryTitle</option>
-                            @foreach (DataRow Row in Products.Rows)
-                            {
-                                <option value="@Row["ID"]"> @Row["Title"] </option>
-                            }
-                        </select>
-                    </div>
-                </div>
-                <div class="col-md-2">
-                    <label>Quantity</label>
-                    <InputNumber @bind-Value="Model.Quantity" @onblur="CalculateNetAmount" step=".01" class="form-control" data-val="true" data-val-required="The Quantity field is required." id="txtQuantity"></InputNumber>
-                </div>
-                <div class="col-md-2">
-                    <label>Rate</label>
-                    <InputNumber @bind-Value="Model.Rate" @onblur="CalculateNetAmount" step=".01" class="form-control" data-val="true" data-val-required="The Rate field is required." id="txtRate"></InputNumber>
-                </div>
-                <div class="col-md-2">
-                    <label>Amount</label>
-                    <InputNumber @bind-Value="Model.Amount" readonly step=".01" class="form-control" data-val="true" data-val-required="The Amount field is required." id="txtAmount"></InputNumber>
-                </div>
-            </div>
-
-
-            <div class="row">
-                <div class="col-md-4">
-
-                    <div class="input-group mb-3 mt-4">
-                        <label class="input-group-text" for="inputGroupSelect01">Tax Category</label>
-                        <InputSelect class="form-select" id="inputTaxes" @bind-Value="Model.TaxID">
-                            <option selected>Choose...</option>
-                            @foreach (DataRow Row in Taxes.Rows)
-                            {
-                                <option value="@Row["ID"]"> @Row["Title"] </option>
-                            }
-                        </InputSelect>
-                    </div>
-                </div>
-                <div class="col-md-2">
-                    <label>Tax Amount</label>
-                    <InputNumber @bind-Value="Model.TaxAmount" step=".01" class="form-control" data-val="true" data-val-required="The TaxAmount field is required." id="txtTaxAmount"></InputNumber>
-
-                </div>
-            </div>
-
-            <div class="row">
-                <div class="col-md-2">
-                    <label>Net Amount</label>
-                    <InputNumber @bind-Value="Model.NetAmount" step=".01" class="form-control" data-val="true" data-val-required="The NetAmount field is required." id="txtNetAmount"></InputNumber>
-                </div>
-
+        </div>
+        <div class="row mt-2">
+            <div class="col-md-3">
+                <label>Invoice Code</label>
+                <InputText @bind-Value="Model.InvoiceCode" class="form-control" data-val="true" data-val-required="The InvoiceCode field is required." id="txtCode"></InputText>
 
             </div>
+            <div class="col-md-3">
+                <label>Invoice Number</label>
+                <InputText @bind-Value="Model.InvoiceNumber" class="form-control" data-val="true" data-val-required="The InvoiceNumber field is required." id="txtNumber"></InputText>
 
-            <button type="button" @onclick="Add" class="btn btn-success">Add</button>
-            <button type="button" @onclick="Save" class="btn btn-secondary">Save</button>
-            <button type="button"  class="btn btn-info">Print</button>
-            <button type="button" class="btn btn-danger">Delete</button>
-            <a class="btn btn-warning" href="/Customer_Invoice/Invoice_Receivable">Back</a>
-            
-        </EditForm>
+            </div>
+            <div class="col-md-3">
+                <label>Invoice Date</label>
+                <InputDate @bind-Value="Model.InvoiceDate" class="form-control" data-val="true" data-val-required="The InvoiceDate field is required." id="txtDate"></InputDate>
 
-    </div>
+            </div>
+            <div class="col-md-3">
+                <label>Payment Date</label>
+                <InputDate @bind-Value="Model.PaymentDate" class="form-control" data-val="true" data-val-required="The PaymentDate field is required." id="txtDate"></InputDate>
+            </div>
+        </div>
+        <div class="row mt-2">
+            <div class="col-md-3">
+
+                <div class="input-group mb-3 mt-4">
+                    <label class="input-group-text" for="inputGroupSelect01">Inventory</label>
+                    <select class="form-select" id="inputGroupSelect01" @bind="@Model.CompanyID">
+                        <option selected>@InventoryTitle</option>
+                        @foreach (DataRow Row in Products.Rows)
+                        {
+                            <option value="@Row["ID"]"> @Row["Title"] </option>
+                        }
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <label>Quantity</label>
+                <InputNumber @bind-Value="Model.Quantity" @onblur="CalculateNetAmount" step=".01" class="form-control" data-val="true" data-val-required="The Quantity field is required." id="txtQuantity"></InputNumber>
+            </div>
+            <div class="col-md-3">
+                <label>Rate</label>
+                <InputNumber @bind-Value="Model.Rate" @onblur="CalculateNetAmount" step=".01" class="form-control" data-val="true" data-val-required="The Rate field is required." id="txtRate"></InputNumber>
+            </div>
+            <div class="col-md-3">
+                <label>Amount</label>
+                <InputNumber @bind-Value="Model.Amount" readonly step=".01" class="form-control" data-val="true" data-val-required="The Amount field is required." id="txtAmount"></InputNumber>
+            </div>
+        </div>
+        <div class="row mt-2">
+            <div class="col-md-3">
+                <div class="input-group mb-3 mt-4">
+                    <label class="input-group-text" for="inputGroupSelect01">Tax Category</label>
+                    <InputSelect class="form-select" id="inputTaxes" @bind-Value="Model.TaxID">
+                        <option selected>Choose...</option>
+                        @foreach (DataRow Row in Taxes.Rows)
+                        {
+                            <option value="@Row["ID"]"> @Row["Title"] </option>
+                        }
+                    </InputSelect>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <label>Tax Amount</label>
+                <InputNumber @bind-Value="Model.TaxAmount" step=".01" class="form-control" data-val="true" data-val-required="The TaxAmount field is required." id="txtTaxAmount"></InputNumber>
+
+            </div>
+            <div class="col-md-3">
+                <label>Net Amount</label>
+                <InputNumber @bind-Value="Model.NetAmount" step=".01" class="form-control" data-val="true" data-val-required="The NetAmount field is required." id="txtNetAmount"></InputNumber>
+            </div>
+        </div>
+        <div class="row mt-2 mb-2 justify-content-center">
+
+            @* <button type="button" @onclick="Add" class="btn btn-primary">Add</button> *@
+            <button type="button" @onclick="Save" class="btn btn-success">Save</button>
+            <button type="button" @onclick="Print" class="btn btn-warning">Print</button>
+            @* <button type="button" @onclick="() => Delete(Model.ID)" class="btn btn-danger">Delete</button> *@
+            <a class="btn btn-info" href="/Customer_Invoice/Invoice_Receivable">Back</a>
+
+        </div>
+
+        <div class="col-1 col-width">
+            <div class="dropdown">
+                <button type="button" class="btn btn-primary btn-250 dropdown-toggle btn-sm" data-bs-toggle="dropdown">
+                    Report Print <i class="bi bi-printer"></i>
+                </button>
+                <ul class="dropdown-menu">
+                    <li><button type="submit" name="prtPreview" class="btn btn-link border-0" @onclick="Print">Preview</button></li>
+                    <li><button type="submit" name="prtPDF" class="btn btn-link border-0" @onclick="Print">PDF</button></li>
+                    <li><button type="submit" name="prtExcel" class="btn btn-link border-0" @onclick="Print">Excel</button></li>
+                    <li><button type="submit" name="prtWord" class="btn btn-link border-0" @onclick="Print">Word</button></li>
+                    <li><button type="submit" name="prtHTML" class="btn btn-link border-0" @onclick="Print">HTML</button></li>
+                </ul>
+            </div>
+        </div>
+
+    </EditForm>
+
+
 
 </div>
-
-
-
 
 <div class="container">
     <table class="custom-table">
@@ -398,43 +470,67 @@
                 <th>Rate</th>
                 <th>Amount</th>
                 <th>Tax Amount</th>
-                <th>Net Amount</th>                
-                
+                <th>Net Amount</th>
+                <th><button class="btn btn-success btn-By" @onclick="Add"><i class="bi bi-plus"></i></button></th>
                 <th></th>
-                <th><button class="btn btn-light"><i class="bi bi-plus me-2"></i></button></th>
-                <th></th>
-
             </tr>
         </thead>
-                
+
         <tbody>
-            @if(Myinvoice != null)
+            @if (Myinvoice != null)
             {
                 @foreach (DataRow Row in Myinvoice.Rows)
                 {
                     var _StockTitle = TableClass.GetTitle("Product", (long)Row["Inventory"]);
+                    var _Date1 = ((DateTime)Row["Invoice Date"]).ToString("dd-MMM-yyy");
+                    var _Date2 = ((DateTime)Row["Payment Date"]).ToString("dd-MMM-yyy");
+                    var _Quantity = ((long)Row["Quantity"]).ToString("###,###,###.##");
+                    var _Rate = ((decimal)Row["Rate"]).ToString("###,###,###.##");
+                    var _Amount = ((decimal)Row["Amount"]).ToString("###,###,###.##");
+                    var _TaxAmount = ((decimal)Row["Tax Amount"]).ToString("###,###,###.##");
+                    var _NetAmount = ((decimal)Row["Net Amount"]).ToString("###,###,###.##");
 
 
                     <tr>
                         <td>@Row["Invoice Number"]</td>
                         <td>@_StockTitle</td>
-                        <td>@Row["Invoice Date"]</td>
-                        <td>@Row["Payment Date"]</td>
-                        <td>@Row["Quantity"]</td>
-                        <td>@Row["Rate"]</td>
-                        <td>@Row["Amount"]</td>
-                        <td>@Row["Tax Amount"]</td>
-                        <td>@Row["Net Amount"]</td>
-                        <td><i class="bi bi-pencil me-2"></i></td>
-                        <td><i class="bi bi-trash3 me-2"></i></td>
+                        <td>@_Date1</td>
+                        <td>@_Date2</td>
+                        <td style="text-align:right; padding-right: 20px;">@_Quantity</td>
+                        <td style="text-align:right; padding-right: 50px;">@_Rate</td>
+                        <td style="text-align:right; padding-right: 50px;">@_Amount</td>
+                        <td style="text-align:right; padding-right: 50px;">@_TaxAmount</td>
+                        <td style="text-align:right; padding-right: 50px;">@_NetAmount</td>
+                        <td>
+                            <button type="submit" @onclick='()=> Edit((long)Row["ID"])' class="btn btn-link btn-My"><i class="bi bi-pencil"></i></button>
+                            |<button type="submit" @onclick='() => Delete((long)Row["ID"])' class="btn btn-dangerous"><i class="bi bi-trash3" style=" color: red;margin-right:5px"></i></button>
+                        </td>
                         <td></td>
+
                     </tr>
                 }
-                
+
 
             }
 
+
+
+
         </tbody>
-        <tfoot>Footer</tfoot>
+        <tfoot>
+            <tr>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td>Total</td>
+                <td>@TotQty</td>
+                <td>@TotRate</td>
+                <td>@TotAmount</td>
+                <td>@TotTaxAmount</td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+        </tfoot>
     </table>
 </div>

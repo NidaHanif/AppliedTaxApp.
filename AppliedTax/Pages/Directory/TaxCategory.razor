@@ -27,7 +27,6 @@
             @foreach (DataRow Row in tb_Taxes.MyDataTable.Rows)
             {
                 <tr>
-                    @*<th scope="row">1</th>*@
                     <td>@Row["Code"]</td>
                     <td>@Row["Title"]</td>
                     <td>@Row["Description"]</td>
@@ -36,6 +35,6 @@
                 </tr>
             }
         </tbody>
-        <tfoot>Footer</tfoot>
+        <tfoot></tfoot>
     </table>
 </div>

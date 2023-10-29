@@ -1,6 +1,12 @@
 ﻿
 SQLite framework.
 NuGet\Install-Package System.Data.SQLite.Core -Version 1.0.118
-==============================================================
 
-AAMIR
+=============================================================
+
+https://www.microsoft.com/en-us/download/details.aspx?id=53613			REPORT BUILDER 3
+
+
+https://github.com/lkosson/reportviewercore				Report Process Framework
+
+http://www.ch-werner.de/sqliteodbc/					ODBC Driver for Reporting.
