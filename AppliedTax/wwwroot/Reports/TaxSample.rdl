@@ -14,38 +14,6 @@
     </DataSource>
   </DataSources>
   <DataSets>
-    <DataSet Name="DataSet1">
-      <Query>
-        <DataSourceName>DataSource1</DataSourceName>
-        <CommandText>SELECT * FROM [Taxes]</CommandText>
-      </Query>
-      <Fields>
-        <Field Name="Id">
-          <DataField>Id</DataField>
-          <rd:TypeName>System.Int32</rd:TypeName>
-        </Field>
-        <Field Name="Code">
-          <DataField>Code</DataField>
-          <rd:TypeName>System.String</rd:TypeName>
-        </Field>
-        <Field Name="Title">
-          <DataField>Title</DataField>
-          <rd:TypeName>System.String</rd:TypeName>
-        </Field>
-        <Field Name="Rate">
-          <DataField>Rate</DataField>
-          <rd:TypeName>System.Decimal</rd:TypeName>
-        </Field>
-        <Field Name="Description">
-          <DataField>Description</DataField>
-          <rd:TypeName>System.String</rd:TypeName>
-        </Field>
-        <Field Name="ID_0">
-          <DataField>_0</DataField>
-          <rd:TypeName>System.String</rd:TypeName>
-        </Field>
-      </Fields>
-    </DataSet>
     <DataSet Name="DataSet2">
       <Query>
         <DataSourceName>DataSource1</DataSourceName>
@@ -973,7 +941,7 @@
             </TablixRowHierarchy>
             <DataSetName>DataSet2</DataSetName>
             <Top>0.04736in</Top>
-            <Left>1.13417in</Left>
+            <Left>0.00917in</Left>
             <Height>0.75in</Height>
             <Width>7.26167in</Width>
             <Style>
@@ -990,10 +958,10 @@
           </Border>
         </Style>
       </Body>
-      <Width>11.125in</Width>
+      <Width>7.27084in</Width>
       <Page>
         <PageHeader>
-          <Height>1.41667in</Height>
+          <Height>1.33334in</Height>
           <PrintOnFirstPage>true</PrintOnFirstPage>
           <PrintOnLastPage>true</PrintOnLastPage>
           <ReportItems>
@@ -1002,9 +970,9 @@
               <Value>Logo</Value>
               <Sizing>FitProportional</Sizing>
               <Top>0.04861in</Top>
-              <Left>2.03125in</Left>
-              <Height>0.39583in</Height>
-              <Width>0.70708in</Width>
+              <Left>0.125in</Left>
+              <Height>1.1875in</Height>
+              <Width>1.00917in</Width>
               <ToolTip>Remarks</ToolTip>
               <Style>
                 <Border>
@@ -1012,43 +980,6 @@
                 </Border>
               </Style>
             </Image>
-            <Textbox Name="Textbox9">
-              <CanGrow>true</CanGrow>
-              <KeepTogether>true</KeepTogether>
-              <Paragraphs>
-                <Paragraph>
-                  <TextRuns>
-                    <TextRun>
-                      <Value>APPLIED INVOICE TAX REPORT</Value>
-                      <Style>
-                        <FontStyle>Normal</FontStyle>
-                        <FontSize>16pt</FontSize>
-                        <FontWeight>Bold</FontWeight>
-                        <TextDecoration>None</TextDecoration>
-                      </Style>
-                    </TextRun>
-                  </TextRuns>
-                  <Style>
-                    <TextAlign>Center</TextAlign>
-                  </Style>
-                </Paragraph>
-              </Paragraphs>
-              <rd:DefaultName>Textbox9</rd:DefaultName>
-              <Top>0.25in</Top>
-              <Left>1.01958in</Left>
-              <Height>0.375in</Height>
-              <Width>6.6575in</Width>
-              <ZIndex>1</ZIndex>
-              <Style>
-                <Border>
-                  <Style>None</Style>
-                </Border>
-                <PaddingLeft>2pt</PaddingLeft>
-                <PaddingRight>2pt</PaddingRight>
-                <PaddingTop>2pt</PaddingTop>
-                <PaddingBottom>2pt</PaddingBottom>
-              </Style>
-            </Textbox>
             <Textbox Name="Textbox10">
               <CanGrow>true</CanGrow>
               <KeepTogether>true</KeepTogether>
@@ -1064,11 +995,11 @@
                 </Paragraph>
               </Paragraphs>
               <rd:DefaultName>Textbox10</rd:DefaultName>
-              <Top>0.44444in</Top>
-              <Left>0.87375in</Left>
+              <Top>0.19444in</Top>
+              <Left>1.25917in</Left>
               <Height>0.25in</Height>
-              <Width>4.96875in</Width>
-              <ZIndex>2</ZIndex>
+              <Width>6.01167in</Width>
+              <ZIndex>1</ZIndex>
               <Style>
                 <Border>
                   <Style>None</Style>
@@ -1096,11 +1027,11 @@
                 </Paragraph>
               </Paragraphs>
               <rd:DefaultName>Textbox32</rd:DefaultName>
-              <Top>0.76389in</Top>
+              <Top>0.63889in</Top>
               <Left>2.63417in</Left>
               <Height>0.25in</Height>
-              <Width>1in</Width>
-              <ZIndex>3</ZIndex>
+              <Width>1.375in</Width>
+              <ZIndex>2</ZIndex>
               <Style>
                 <Border>
                   <Style>None</Style>
@@ -1128,11 +1059,11 @@
                 </Paragraph>
               </Paragraphs>
               <rd:DefaultName>Textbox33</rd:DefaultName>
-              <Top>1.11111in</Top>
-              <Left>2.73833in</Left>
+              <Top>0.98611in</Top>
+              <Left>2.63417in</Left>
               <Height>0.25in</Height>
-              <Width>1in</Width>
-              <ZIndex>4</ZIndex>
+              <Width>1.375in</Width>
+              <ZIndex>3</ZIndex>
               <Style>
                 <Border>
                   <Style>None</Style>
@@ -1161,11 +1092,11 @@
                 </Paragraph>
               </Paragraphs>
               <rd:DefaultName>Textbox34</rd:DefaultName>
-              <Top>0.76389in</Top>
-              <Left>6.03in</Left>
+              <Top>0.63889in</Top>
+              <Left>6.155in</Left>
               <Height>0.25in</Height>
-              <Width>1in</Width>
-              <ZIndex>5</ZIndex>
+              <Width>1.11584in</Width>
+              <ZIndex>4</ZIndex>
               <Style>
                 <Border>
                   <Style>None</Style>
@@ -1194,11 +1125,11 @@
                 </Paragraph>
               </Paragraphs>
               <rd:DefaultName>Textbox35</rd:DefaultName>
-              <Top>1.11111in</Top>
-              <Left>6.03in</Left>
+              <Top>0.98611in</Top>
+              <Left>6.155in</Left>
               <Height>0.25in</Height>
-              <Width>1in</Width>
-              <ZIndex>6</ZIndex>
+              <Width>1.11584in</Width>
+              <ZIndex>5</ZIndex>
               <Style>
                 <Border>
                   <Style>None</Style>
@@ -1226,11 +1157,11 @@
                 </Paragraph>
               </Paragraphs>
               <rd:DefaultName>Textbox36</rd:DefaultName>
-              <Top>0.76389in</Top>
-              <Left>1.5925in</Left>
+              <Top>0.63889in</Top>
+              <Left>1.25917in</Left>
               <Height>0.25in</Height>
               <Width>1in</Width>
-              <ZIndex>7</ZIndex>
+              <ZIndex>6</ZIndex>
               <Style>
                 <Border>
                   <Style>None</Style>
@@ -1258,11 +1189,11 @@
                 </Paragraph>
               </Paragraphs>
               <rd:DefaultName>Textbox46</rd:DefaultName>
-              <Top>1.11111in</Top>
-              <Left>1.50917in</Left>
+              <Top>0.98611in</Top>
+              <Left>1.25917in</Left>
               <Height>0.25in</Height>
               <Width>1.22917in</Width>
-              <ZIndex>8</ZIndex>
+              <ZIndex>7</ZIndex>
               <Style>
                 <Border>
                   <Style>None</Style>
@@ -1290,11 +1221,11 @@
                 </Paragraph>
               </Paragraphs>
               <rd:DefaultName>Textbox62</rd:DefaultName>
-              <Top>1.11111in</Top>
-              <Left>4.78in</Left>
+              <Top>0.98611in</Top>
+              <Left>4.905in</Left>
               <Height>0.25in</Height>
               <Width>1.13542in</Width>
-              <ZIndex>9</ZIndex>
+              <ZIndex>8</ZIndex>
               <Style>
                 <Border>
                   <Style>None</Style>
@@ -1322,11 +1253,11 @@
                 </Paragraph>
               </Paragraphs>
               <rd:DefaultName>Textbox62</rd:DefaultName>
-              <Top>0.76389in</Top>
-              <Left>4.78in</Left>
+              <Top>0.63889in</Top>
+              <Left>4.905in</Left>
               <Height>0.25in</Height>
               <Width>1in</Width>
-              <ZIndex>10</ZIndex>
+              <ZIndex>9</ZIndex>
               <Style>
                 <Border>
                   <Style>None</Style>
@@ -1359,6 +1290,7 @@
                       <Value>=Globals!ExecutionTime</Value>
                       <Style>
                         <FontStyle>Italic</FontStyle>
+                        <FontSize>8pt</FontSize>
                       </Style>
                     </TextRun>
                   </TextRuns>
@@ -1366,14 +1298,15 @@
                 </Paragraph>
               </Paragraphs>
               <rd:DefaultName>Textbox11</rd:DefaultName>
-              <Top>0.32292in</Top>
-              <Left>4.44792in</Left>
+              <Top>0.26958in</Top>
+              <Left>3.82292in</Left>
               <Height>0.25in</Height>
-              <Width>3.40625in</Width>
+              <Width>3.44792in</Width>
               <Style>
                 <Border>
                   <Style>None</Style>
                 </Border>
+                <VerticalAlign>Bottom</VerticalAlign>
                 <PaddingLeft>2pt</PaddingLeft>
                 <PaddingRight>2pt</PaddingRight>
                 <PaddingTop>2pt</PaddingTop>
@@ -1387,9 +1320,11 @@
                 <Paragraph>
                   <TextRuns>
                     <TextRun>
-                      <Value>Powered by Applied Invoice</Value>
+                      <Value>Powered by Applied Software House</Value>
                       <Style>
                         <FontStyle>Italic</FontStyle>
+                        <FontSize>8pt</FontSize>
+                        <FontWeight>Bold</FontWeight>
                       </Style>
                     </TextRun>
                   </TextRuns>
@@ -1398,7 +1333,6 @@
               </Paragraphs>
               <rd:DefaultName>Textbox98</rd:DefaultName>
               <Top>0.26958in</Top>
-              <Left>0.87375in</Left>
               <Height>0.25in</Height>
               <Width>2.5in</Width>
               <ZIndex>1</ZIndex>
@@ -1406,6 +1340,7 @@
                 <Border>
                   <Style>None</Style>
                 </Border>
+                <VerticalAlign>Bottom</VerticalAlign>
                 <PaddingLeft>2pt</PaddingLeft>
                 <PaddingRight>2pt</PaddingRight>
                 <PaddingTop>2pt</PaddingTop>
@@ -1435,6 +1370,21 @@
       <Nullable>true</Nullable>
       <Prompt>ReportParameter1</Prompt>
     </ReportParameter>
+    <ReportParameter Name="Heading1">
+      <DataType>String</DataType>
+      <Nullable>true</Nullable>
+      <Prompt>Report Heading 1</Prompt>
+    </ReportParameter>
+    <ReportParameter Name="Heading2">
+      <DataType>String</DataType>
+      <Nullable>true</Nullable>
+      <Prompt>Report Heading 2</Prompt>
+    </ReportParameter>
+    <ReportParameter Name="Footer">
+      <DataType>String</DataType>
+      <Nullable>true</Nullable>
+      <Prompt>Report Footer</Prompt>
+    </ReportParameter>
     <ReportParameter Name="InvoiceCode">
       <DataType>String</DataType>
       <DefaultValue>
@@ -1458,6 +1408,21 @@
         <CellDefinition>
           <ColumnIndex>1</ColumnIndex>
           <RowIndex>0</RowIndex>
+          <ParameterName>Heading1</ParameterName>
+        </CellDefinition>
+        <CellDefinition>
+          <ColumnIndex>2</ColumnIndex>
+          <RowIndex>0</RowIndex>
+          <ParameterName>Heading2</ParameterName>
+        </CellDefinition>
+        <CellDefinition>
+          <ColumnIndex>3</ColumnIndex>
+          <RowIndex>0</RowIndex>
+          <ParameterName>Footer</ParameterName>
+        </CellDefinition>
+        <CellDefinition>
+          <ColumnIndex>0</ColumnIndex>
+          <RowIndex>1</RowIndex>
           <ParameterName>InvoiceCode</ParameterName>
         </CellDefinition>
       </CellDefinitions>

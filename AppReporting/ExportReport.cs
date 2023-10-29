@@ -33,6 +33,7 @@ namespace AppReportClass
 
         public static string GetReportExtention(ReportType _ReportType)
         {
+            if (_ReportType == ReportType.Preview) { return ".pdf"; }
             if (_ReportType == ReportType.PDF) { return ".pdf"; }
             if (_ReportType == ReportType.HTML) { return ".html"; }
             if (_ReportType == ReportType.Word) { return ".docx"; }
@@ -42,6 +43,7 @@ namespace AppReportClass
 
         public static string GetReportMime(ReportType _ReportType)
         {
+            if (_ReportType == ReportType.Preview) { return "application/pdf"; }
             if (_ReportType == ReportType.PDF) { return "application/pdf"; }
             if (_ReportType == ReportType.HTML) { return "text/html"; }
             if (_ReportType == ReportType.Word) { return "application/vnd.openxmlformats-officedocument.wordprocessingml.doc.ument"; }
@@ -61,38 +63,37 @@ namespace AppReportClass
             return;
         }
 
-        public byte[] Render(ReportParameters? _ReportParameter)
+        public byte[] Render(ReportParameters _ReportParameter)
         {
-            Variables ??= _ReportParameter;
-            Variables.DataParameters ??= GetDataParameters();
-            var _ReportType = _ReportParameter.ReportType;
-
-            if (_ReportParameter.ReportType == ReportType.Preview)
+            if (_ReportParameter != null)
             {
-                _ReportType = ReportType.PDF;
+                ReportDataSource _DataSource = new(_ReportParameter.DataSetName, _ReportParameter.ReportData);
+                LocalReport report = new();
+
+
+                var _ReportFileName = $"{_ReportParameter.ReportPath}{_ReportParameter.ReportFile}";
+                var _ReportStream = new StreamReader(_ReportFileName);
+                _ReportParameter.DataParameters ??= GetDataParameters();
+
+                report.LoadReportDefinition(_ReportStream);
+                report.DataSources.Add(_DataSource);
+                report.SetParameters(_ReportParameter.DataParameters);
+                var _RenderFormat = GetRenderFormat(_ReportParameter.ReportType);
+                _ReportParameter.FileBytes = report.Render(_RenderFormat);
+                _ReportParameter.MimeType = GetReportMime(_ReportParameter.ReportType);
+                _ReportParameter.OutputFileExtention = GetReportExtention(_ReportParameter.ReportType);
+                _ReportParameter.OutputFileFullName = $"{_ReportParameter.OutputPath}{_ReportParameter.OutputFile}{_ReportParameter.OutputFileExtention}";
+                _ReportParameter.OutputFileName = $"{_ReportParameter.OutputFile}{_ReportParameter.OutputFileExtention}";
+
+                _ReportParameter.MyMessage = $"File length = {_ReportParameter.FileBytes.Length} ";
+                if (_ReportParameter.ReportType.Equals(ReportType.Preview) || _ReportParameter.ReportType.Equals(ReportType.PDF))
+                {
+                    _ReportParameter.ReportType = ReportType.PDF;
+                    _ReportParameter.IsSaved = SaveReport();
+                }
+                return _ReportParameter.FileBytes;
             }
-
-            var _ReportFile = string.Concat(Variables.ReportPath, Variables.ReportFile);
-            ReportDataSource _DataSource = new(Variables.DataSetName, Variables.ReportData);
-            LocalReport report = new();
-            var _ReportStream = new StreamReader(_ReportFile);
-            report.LoadReportDefinition(_ReportStream);
-            report.DataSources.Add(_DataSource);
-            report.SetParameters(Variables.DataParameters);
-            var _RenderFormat = GetRenderFormat(_ReportType);
-            Variables.FileBytes = report.Render(_RenderFormat);
-
-            Variables.MimeType = GetReportMime(_ReportType);
-            Variables.OutputFileExtention = GetReportExtention(_ReportType);
-            Variables.OutputFileFullName = $"{Variables.OutputPath}{Variables.OutputFile}{Variables.OutputFileExtention}";
-            Variables.OutputFileName = $"{Variables.OutputFile}{Variables.OutputFileExtention}";
-
-            Variables.MyMessage = $"File length = {Variables.FileBytes.Length} ";
-            if (Variables.ReportType == ReportType.Preview)
-            {
-                Variables.IsSaved = SaveReport();
-            }
-            return Variables.FileBytes;
+            return Array.Empty<byte>();
         }
 
         private static List<ReportParameter> GetDataParameters()
@@ -116,7 +117,7 @@ namespace AppReportClass
             }
 
             FileStream MyFileStream;
-            var _FileName = Variables.OutputFileFullName;
+            var _FileName = $"{Variables.OutputFileFullName}";
             if (Variables != null)
             {
                 if (_FileName.Length > 0)

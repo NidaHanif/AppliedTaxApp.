@@ -5,7 +5,7 @@ VisualStudioVersion = 17.6.33723.286
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AppliedTax", "AppliedTax\AppliedTax.csproj", "{08466021-4EC5-4D27-B948-DE14E8C33782}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AppReportClass", "..\AppReporting\AppReportClass.csproj", "{05D7F2E8-2432-4AC1-9367-4579678FAC44}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AppReportClass", "AppReporting\AppReportClass.csproj", "{32CF9953-E9AD-49FB-9584-FD9944C764A0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -17,10 +17,10 @@ Global
 		{08466021-4EC5-4D27-B948-DE14E8C33782}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{08466021-4EC5-4D27-B948-DE14E8C33782}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{08466021-4EC5-4D27-B948-DE14E8C33782}.Release|Any CPU.Build.0 = Release|Any CPU
-		{05D7F2E8-2432-4AC1-9367-4579678FAC44}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{05D7F2E8-2432-4AC1-9367-4579678FAC44}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{05D7F2E8-2432-4AC1-9367-4579678FAC44}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{05D7F2E8-2432-4AC1-9367-4579678FAC44}.Release|Any CPU.Build.0 = Release|Any CPU
+		{32CF9953-E9AD-49FB-9584-FD9944C764A0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{32CF9953-E9AD-49FB-9584-FD9944C764A0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{32CF9953-E9AD-49FB-9584-FD9944C764A0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{32CF9953-E9AD-49FB-9584-FD9944C764A0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
