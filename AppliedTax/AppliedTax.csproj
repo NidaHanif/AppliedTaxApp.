@@ -8,9 +8,15 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="wwwroot\PrintReports\**" />
+    <Content Remove="wwwroot\PrintReports\**" />
+    <EmbeddedResource Remove="wwwroot\PrintReports\**" />
+    <None Remove="wwwroot\PrintReports\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Folder Include="Pages\Taxes\" />
     <Folder Include="wwwroot\DataBase\" />
-    <Folder Include="wwwroot\PrintReports\" />
   </ItemGroup>
 
   <ItemGroup>
