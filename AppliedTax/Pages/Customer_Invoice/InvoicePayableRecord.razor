@@ -1,8 +1,11 @@
 ﻿@page "/Customer_Invoice/InvoicePayableRecord/{InvCode}"
+@using System.IO;
 @using AppliedTax.Codes;
 @using System.Data;
 @using System.Data.SQLite;
 @using System.Text;
+@using AppReportClass;
+@using Microsoft.Reporting.NETCore;
 @inject NavigationManager _navigationManager
 
 <h1>
@@ -10,19 +13,24 @@
 </h1>
 
 @code {
-    public TableClass tb_Invoice = new("[Invoice]");
+    public TableClass tb_Payable = new("[Payable]");
     public DataTable Myinvoice;
-    decimal Amount = 0;
-    decimal TaxAmount = 0;
-    decimal NetAmount = 0;
+    decimal Amount = 0.00M;
+    decimal TaxAmount = 0.00M;
+    decimal NetAmount = 0.00M;
+    decimal TotQty = 0.00M;
+    decimal TotRate = 0.00M;
+    decimal TotAmount = 0.00M;
+    decimal TotTaxAmount = 0.00M;
+
 
 
     [Parameter]
     public string InvCode { get; set; }
     public Parameters Model { get; set; }
-    public string TableName = "Invoice";
+    public string TableName = "Payable";
     public string MyMessage = String.Empty;
-    public DataTable Invoice = TableClass.GetTable("Invoice");
+    public DataTable Payable = TableClass.GetTable("Payable");
     public DataTable Taxes = TableClass.GetTable("Taxes");
     public DataTable Products = TableClass.GetTable("Product");
     public DataTable CustomerName = TableClass.GetTable("Company");
@@ -31,14 +39,59 @@
     public string CompanyTitle { get; set; }
     public string TaxTitle { get; set; }
 
+
+    protected override void OnInitialized()
+    {
+        if (InvCode.Length == 0) { InvCode = string.Empty; }
+        MyRow = TableClass.GetRow(TableName, InvCode);
+        Model = new();
+
+        if (MyRow != null)
+        {
+            if (MyRow["ID"] != DBNull.Value)
+            {
+                Model = new()
+                    {
+                        ID = (long)MyRow["ID"],
+                        InvoiceCode = (string)MyRow["Invoice Code"],
+                        InvoiceNumber = (string)MyRow["Invoice Number"],
+                        InvoiceDate = (DateTime)MyRow["Invoice Date"],
+                        PaymentDate = (DateTime)MyRow["Payment Date"],
+                        Inventory = (long)MyRow["Inventory"],
+                        Quantity = (long)MyRow["Quantity"],
+                        Amount = (decimal)MyRow["Amount"],
+                        Rate = (decimal)MyRow["Rate"],
+                        TaxAmount = (decimal)MyRow["Tax Amount"],
+                        NetAmount = (decimal)MyRow["Net Amount"],
+                        CompanyID = (long)MyRow["Company Id"],
+                        PSID = (long)MyRow["PSID"],
+                        TCID = (long)MyRow["TCID"],
+                        OrdID = (long)MyRow["Ord_ID"],
+                        TaxID = (long)MyRow["TaxID"]
+                    };
+
+                InventoryTitle = TableClass.GetTitle("Product", Model.Inventory);
+                CompanyTitle = TableClass.GetTitle("Company", (long)MyRow["Company Id"]);
+                TaxTitle = TableClass.GetTitle("Taxes", (long)MyRow["TaxID"]);
+                Myinvoice = GetInvoice();
+                TotQty = Convert.ToDecimal(Myinvoice.Compute("SUM(Quantity)", ""));
+                TotRate = (decimal)Myinvoice.Compute("SUM(Rate)", "");
+                TotAmount = (decimal)Myinvoice.Compute("SUM(Amount)", "");
+
+            }
+        }
+    }
+
+
     private DataTable GetInvoice()
     {
-        tb_Invoice.MyDataView.RowFilter = $"[Invoice Code] = '{Model.InvoiceCode}'";
-        if (tb_Invoice.MyDataView.Count > 0)
+        tb_Payable = new("Payable");
+        tb_Payable.MyDataView.RowFilter = $"[Invoice Code] = '{Model.InvoiceCode}'";
+        if (tb_Payable.MyDataView.Count > 0)
         {
-            return tb_Invoice.MyDataView.ToTable();
+            return tb_Payable.MyDataView.ToTable();
         }
-        return tb_Invoice.MyDataTable.Clone();
+        return tb_Payable.MyDataTable.Clone();
     }
 
     private void Save()
@@ -47,7 +100,7 @@
         string _TableName = MyRow.Table.TableName;
         long _ID = (long)MyRow["ID"];
         int _Effected;
-        TableClass _Table = new("Invoice");
+        TableClass _Table = new("Payable");
         var _Date1 = ((DateTime)MyRow["Invoice Date"]).ToString("yyyy-MM-dd");
         var _Date2 = ((DateTime)MyRow["Payment Date"]).ToString("yyyy-MM-dd");
 
@@ -86,7 +139,7 @@
         }
         else
         {
-            var _MAXID = (long)tb_Invoice.MyDataTable.Compute("MAX(Id)", "") + 1;
+            var _MAXID = (long)tb_Payable.MyDataTable.Compute("MAX(Id)", "") + 1;
             var _Command = new SQLiteCommand(ConnectionClass.GetConnected());
             var _Text = new StringBuilder();
             _Text.Append($"INSERT INTO [{_TableName}] VALUES ({_MAXID},");
@@ -126,14 +179,75 @@
         }
 
         Myinvoice = GetInvoice();
-        NevigateToYourUrl();
     }
 
-    void NevigateToYourUrl()
+    private void Delete(long ID)
     {
-        _navigationManager.NavigateTo($"Customer_Invoice\\InvoiceReceivableRecord\\{InvCode}");
+        if (ID > 0)
+        {
+
+            var TextDelete = "DELETE FROM [Payable] WHERE [ID] = @ID";
+            var SQLCommand = new SQLiteCommand(TextDelete, ConnectionClass.GetConnected());
+            SQLCommand.Parameters.AddWithValue("@ID", ID);
+            var effected = SQLCommand.ExecuteNonQuery();
+            if (effected > 0)
+            {
+                Myinvoice = GetInvoice();
+                if (Myinvoice.Rows.Count == 0)
+                {
+                    _navigationManager.NavigateTo("/Customer_Invoice/InvoicePayable");
+
+                }
+                MyMessage = "Record has been deleted successfully";
+            }
+            else
+            {
+                MyMessage = "Record not deleted.";
+            }
+        }
+        else
+        {
+            MyMessage = "Value id not more than zero";
+        }
     }
 
+    private void Print()
+    {
+        DataTable _Table = new();
+        ReportParameters rptParameters = new();
+        List<ReportParameter> _Parameters = new List<ReportParameter>
+        {
+                new ReportParameter("CompanyName", "Applied Software House"),
+                new ReportParameter("Heading1", CompanyTitle),
+                new ReportParameter("Heading2", "Sales Tax Invocies"),
+                new ReportParameter("Footer", "Powered by Applied Software House"),
+                new ReportParameter("InvoiceCode", InvCode)
+        };
+
+        rptParameters.ReportPath = $"{Directory.GetCurrentDirectory()}\\wwwroot\\Reports\\";
+        rptParameters.ReportFile = "TaxSample.rdl";
+        rptParameters.ReportType = ReportType.Preview;
+
+        rptParameters.OutputFile = "TaxSample";                                                         // Do not Add Extention Type with File name.
+        rptParameters.OutputPath = $"{Directory.GetCurrentDirectory()}\\wwwroot\\PrintReports\\";
+
+        rptParameters.ReportData = Myinvoice;
+        rptParameters.DataSetName = "DataSet2";
+
+        rptParameters.DataParameters = _Parameters;
+
+        var ReportExport = new ExportReport(rptParameters);
+
+        if (File.Exists($"{rptParameters.ReportPath}{rptParameters.ReportFile}"))
+        {
+            ReportExport.Render();
+        }
+        else
+        {
+            MyMessage = "Report Not found to print";
+        }
+
+    }
 
     private void Add()
     {
@@ -170,45 +284,6 @@
 
     }
 
-    protected override void OnInitialized()
-    {
-        if (InvCode == string.Empty) { InvCode = string.Empty; }
-        MyRow = TableClass.GetRow(TableName, InvCode);
-        Model = new();
-
-        if (MyRow != null)
-        {
-            if (MyRow["ID"] != DBNull.Value)
-            {
-                Model = new()
-                    {
-                        ID = (long)MyRow["ID"],
-                        InvoiceCode = (string)MyRow["Invoice Code"],
-                        InvoiceNumber = (string)MyRow["Invoice Number"],
-                        InvoiceDate = (DateTime)MyRow["Invoice Date"],
-                        PaymentDate = (DateTime)MyRow["Payment Date"],
-                        Inventory = (long)MyRow["Inventory"],
-                        Quantity = (long)MyRow["Quantity"],
-                        Amount = (decimal)MyRow["Amount"],
-                        Rate = (decimal)MyRow["Rate"],
-                        TaxAmount = (decimal)MyRow["Tax Amount"],
-                        NetAmount = (decimal)MyRow["Net Amount"],
-                        CompanyID = (long)MyRow["Company Id"],
-                        PSID = (long)MyRow["PSID"],
-                        TCID = (long)MyRow["TCID"],
-                        OrdID = (long)MyRow["Ord_ID"],
-                        TaxID = (long)MyRow["TaxID"]
-                    };
-
-                InventoryTitle = TableClass.GetTitle("Product", Model.Inventory);
-                CompanyTitle = TableClass.GetTitle("Company", (long)MyRow["Company Id"]);
-                TaxTitle = TableClass.GetTitle("Taxes", (long)MyRow["TaxID"]);
-                Myinvoice = GetInvoice();
-
-            }
-        }
-    }
-
     private void Submit()
     {
         var a = Model.InvoiceNumber;
@@ -220,6 +295,39 @@
         Model.TaxAmount = Model.Amount * TableClass.GetTaxRare(Model.TaxID);
         Model.NetAmount = Model.Amount + Model.TaxAmount;
     }
+
+    private void Edit(long ID)
+    {
+        tb_Payable.MyDataView.RowFilter = $"ID={ID}";
+        if (tb_Payable.MyDataView.Count == 1)
+        {
+            MyRow = tb_Payable.MyDataView[0].Row;
+            Model = new()
+                {
+                    ID = (long)MyRow["ID"],
+                    InvoiceCode = (string)MyRow["Invoice Code"],
+                    InvoiceNumber = (string)MyRow["Invoice Number"],
+                    InvoiceDate = (DateTime)MyRow["Invoice Date"],
+                    PaymentDate = (DateTime)MyRow["Payment Date"],
+                    Inventory = (long)MyRow["Inventory"],
+                    Quantity = (long)MyRow["Quantity"],
+                    Amount = (decimal)MyRow["Amount"],
+                    Rate = (decimal)MyRow["Rate"],
+                    TaxAmount = (decimal)MyRow["Tax Amount"],
+                    NetAmount = (decimal)MyRow["Net Amount"],
+                    CompanyID = (long)MyRow["Company Id"],
+                    PSID = (long)MyRow["PSID"],
+                    TCID = (long)MyRow["TCID"],
+                    OrdID = (long)MyRow["Ord_ID"],
+                    TaxID = (long)MyRow["TaxID"]
+                };
+        }
+        else
+        {
+            MyMessage = "Record not Found";
+        }
+    }
+
 
 
     #region Variables
@@ -245,12 +353,8 @@
     }
     #endregion
 
-}
+}@MyMessage;
 
-
-<a href="" @onclick="@NevigateToYourUrl" @onclick:preventDefault />
-
-@MyMessage;
 
 <div class="container">
     <EditForm Model="@Model" OnSubmit="@Submit">
@@ -344,8 +448,7 @@
         <div class="row mt-2 mb-2 justify-content-center">
 
             <button type="button" @onclick="Save" class="btn btn-success">Save</button>
-            <button type="button" class="btn btn-warning">Print</button>
-            <button type="button" class="btn btn-danger">Delete</button>
+            <a class="btn btn-warning" type="button" href="/PrintReports/TaxSample.pdf" target="_blank">Print</a>
             <a class="btn btn-info" href="/Customer_Invoice/InvoicePayable">Back</a>
 
         </div>
@@ -368,7 +471,7 @@
                 <th>Amount</th>
                 <th>Tax Amount</th>
                 <th>Net Amount</th>
-                <th style="width:5%"><button class="btn btn-light" @onclick="Add"><i class="bi bi-plus"></i></button></th>
+                <th><button class="btn btn-success btn-By" @onclick="Add"><i class="bi bi-plus"></i></button></th>
                 <th></th>
             </tr>
         </thead>
@@ -399,17 +502,19 @@
                         <td style="text-align:right; padding-right: 50px;">@_TaxAmount</td>
                         <td style="text-align:right; padding-right: 50px;">@_NetAmount</td>
                         <td>
-                            <i class="bi bi-pencil me-1" style="color:blue;"></i>
+                            <button type="submit" @onclick='()=> Edit((long)Row["ID"])' class="btn btn-link btn-My"><i class="bi bi-pencil"></i></button>
+                            |<button type="submit" @onclick='() => Delete((long)Row["ID"])' class="btn btn-dangerous"><i class="bi bi-trash3" style=" color: red;margin-right:5px"></i></button>
                         </td>
-                        <td>
-                            <i class="bi bi-trash3 me-1" style="color:red;"></i>
-                        </td>
+                        <td></td>
 
                     </tr>
                 }
 
 
             }
+
+
+
 
         </tbody>
         <tfoot>
@@ -418,14 +523,13 @@
                 <td></td>
                 <td></td>
                 <td>Total</td>
+                <td>@TotQty</td>
+                <td>@TotRate</td>
+                <td>@TotAmount</td>
+                <td>@TotTaxAmount</td>
                 <td></td>
                 <td></td>
                 <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-
             </tr>
         </tfoot>
     </table>

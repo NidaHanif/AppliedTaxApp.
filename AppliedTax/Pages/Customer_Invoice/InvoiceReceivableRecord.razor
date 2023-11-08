@@ -5,7 +5,11 @@
 @using System.Data.SQLite;
 @using System.Text;
 @using AppReportClass;
+
+@using Microsoft.AspNetCore.Mvc.RazorPages;
+@using Microsoft.AspNetCore.Mvc;
 @using Microsoft.Reporting.NETCore;
+
 @inject NavigationManager _navigationManager
 
 <h1>Invoice Receivable Record</h1>
@@ -207,6 +211,7 @@
             MyMessage = "Value id not more than zero";
         }
     }
+
     private void Print()
     {
         DataTable _Table = new();
@@ -237,11 +242,31 @@
         if (File.Exists($"{rptParameters.ReportPath}{rptParameters.ReportFile}"))
         {
             ReportExport.Render();
+            if (ReportExport.Variables.IsSaved)
+            {
+                ShowReport($"{rptParameters.OutputPath}{rptParameters.OutputFile}{rptParameters.OutputFileExtention}");
+                ReportExport = null;
+                // report show in page;
+
+            }
+
         }
         else
         {
             MyMessage = "Report Not found to print";
         }
+
+    }
+
+    private IActionResult ShowReport(string _ReportPath)
+    {
+        if (File.Exists(_ReportPath))
+        {
+            var stream = new FileStream(_ReportPath, FileMode.Open);
+            return new FileStreamResult(stream, "application/pdf");
+        }
+            return new RedirectResult("/");
+
 
     }
 
@@ -447,24 +472,9 @@
             @* <button type="button" @onclick="Add" class="btn btn-primary">Add</button> *@
             <button type="button" @onclick="Save" class="btn btn-success">Save</button>
             <button type="button" @onclick="Print" class="btn btn-warning">Print</button>
-            @* <button type="button" @onclick="() => Delete(Model.ID)" class="btn btn-danger">Delete</button> *@
+            <a hidden class="btn btn-warning" type="button" href="/PrintReports/TaxSample.pdf" target="_blank">Print</a>
             <a class="btn btn-info" href="/Customer_Invoice/Invoice_Receivable">Back</a>
 
-        </div>
-
-        <div class="col-1 col-width">
-            <div class="dropdown">
-                <button type="button" class="btn btn-primary btn-250 dropdown-toggle btn-sm" data-bs-toggle="dropdown">
-                    Report Print <i class="bi bi-printer"></i>
-                </button>
-                <ul class="dropdown-menu">
-                    <li><button type="submit" name="prtPreview" class="btn btn-link border-0" @onclick="Print">Preview</button></li>
-                    <li><button type="submit" name="prtPDF" class="btn btn-link border-0" @onclick="Print">PDF</button></li>
-                    <li><button type="submit" name="prtExcel" class="btn btn-link border-0" @onclick="Print">Excel</button></li>
-                    <li><button type="submit" name="prtWord" class="btn btn-link border-0" @onclick="Print">Word</button></li>
-                    <li><button type="submit" name="prtHTML" class="btn btn-link border-0" @onclick="Print">HTML</button></li>
-                </ul>
-            </div>
         </div>
 
     </EditForm>
