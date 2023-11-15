@@ -5,12 +5,13 @@
 @using System.Data.SQLite;
 @using System.Text;
 @using AppReportClass;
-
+@using Append.Blazor.Printing
 @using Microsoft.AspNetCore.Mvc.RazorPages;
 @using Microsoft.AspNetCore.Mvc;
 @using Microsoft.Reporting.NETCore;
 
 @inject NavigationManager _navigationManager
+@inject IPrintingService PrintingService
 
 <h1>Invoice Receivable Record</h1>
 
@@ -40,6 +41,7 @@
     public string InventoryTitle { get; set; }
     public string CompanyTitle { get; set; }
     public string TaxTitle { get; set; }
+    public string PdfFile { get; set; }
 
 
 
@@ -212,7 +214,7 @@
         }
     }
 
-    private void Print()
+    private string GetPDF()
     {
         DataTable _Table = new();
         ReportParameters rptParameters = new();
@@ -239,37 +241,26 @@
 
         var ReportExport = new ExportReport(rptParameters);
 
+
+        // if report rdl file exist then work.
         if (File.Exists($"{rptParameters.ReportPath}{rptParameters.ReportFile}"))
         {
             ReportExport.Render();
             if (ReportExport.Variables.IsSaved)
             {
-                ShowReport($"{rptParameters.OutputPath}{rptParameters.OutputFile}{rptParameters.OutputFileExtention}");
-                ReportExport = null;
-                // report show in page;
-
+                PdfFile = $"{rptParameters.OutputPath}{rptParameters.OutputFile}{rptParameters.OutputFileExtention}";
+                return PdfFile;
             }
-
         }
         else
         {
             MyMessage = "Report Not found to print";
         }
-
+        return PdfFile;
     }
 
-    private IActionResult ShowReport(string _ReportPath)
-    {
-        if (File.Exists(_ReportPath))
-        {
-            var stream = new FileStream(_ReportPath, FileMode.Open);
-            return new FileStreamResult(stream, "application/pdf");
-        }
-            return new RedirectResult("/");
 
-
-    }
-
+    
     private void Add()
     {
         Model.ID = 0;
@@ -469,11 +460,14 @@
         </div>
         <div class="row mt-2 mb-2 justify-content-center">
 
-            @* <button type="button" @onclick="Add" class="btn btn-primary">Add</button> *@
+            
             <button type="button" @onclick="Save" class="btn btn-success">Save</button>
-            <button type="button" @onclick="Print" class="btn btn-warning">Print</button>
-            <a hidden class="btn btn-warning" type="button" href="/PrintReports/TaxSample.pdf" target="_blank">Print</a>
             <a class="btn btn-info" href="/Customer_Invoice/Invoice_Receivable">Back</a>
+            <a class="btn btn-info" href="file:///D:/AamirSource/AppliedTaxApp/AppliedTax/wwwroot/PrintReports/TaxSample.pdf" target="_blank">Print 1</a>
+            <a class="btn btn-info" href="@(()=> GetPDF())" target="_blank">Print 2</a>
+            
+            
+            <EditButton></EditButton>
 
         </div>
 

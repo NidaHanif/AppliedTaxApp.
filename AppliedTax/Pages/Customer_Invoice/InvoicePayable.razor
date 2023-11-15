@@ -1,8 +1,7 @@
 ﻿@page "/Customer_Invoice/InvoicePayable"
 @using AppliedTax.Codes;
 @using System.Data;
-@using System.Data.SQLite;
-@using System.Text;
+
 
 <h1>
     Invoice Payable
@@ -10,39 +9,7 @@
 
 
 @code {
-    public TableClass tb_Payable = new("[Invoice2]");
-
-    [Parameter]
-    public long InvID { get; set; }
-    public string MyMessage = String.Empty;
-
-
-
-    private void Delete(long ID)
-    {
-        if (ID > 0)
-        {
-
-            var TextDelete = "DELETE FROM [Payable] WHERE [ID] = @ID";
-            var SQLCommand = new SQLiteCommand(TextDelete, ConnectionClass.GetConnected());
-            SQLCommand.Parameters.AddWithValue("@ID", ID);
-            var effected = SQLCommand.ExecuteNonQuery();
-            if (effected > 0)
-            {
-                MyMessage = "Record has been deleted successfully";
-            }
-            else
-            {
-                MyMessage = "Record not deleted.";
-            }
-        }
-        else
-        {
-            MyMessage = "Value id not more than zero";
-        }
-    }
-
-
+    public TableClass tb_Invoice = new("[Invoice1]");
 }
 
 <div class="container">
@@ -64,7 +31,7 @@
         </thead>
         <tbody>
 
-            @foreach (DataRow Row in tb_Payable.MyDataTable.Rows)
+            @foreach (DataRow Row in tb_Invoice.MyDataTable.Rows)
             {
                 var Date1 = ((DateTime)Row["Invoice Date"]).ToString("dd-MMM-yyyy");
                 var Date2 = ((DateTime)Row["Payment Date"]).ToString("dd-MMM-yyyy");
@@ -84,9 +51,9 @@
                     <td style="text-align:right; padding-right: 20px;">@TaxAmount</td>
                     <td style="text-align:right; padding-right: 20px;">@NetAmount</td>
                     <td>
-                        <a class="btn btn-danger" style="width:20%" href="/Customer_Invoice/InvoicePayableRecord/@Row["Invoice Code"]"><i class="bi bi-pencil-fill me-2"></i></a>
-                        <button type="submit" @onclick='() => Delete((long)Row["ID"])' class="btn btn-primary" style="width:20%"><i class="bi bi-trash3-fill me-2"></i></button>
-                        <a class="btn btn-success" style="width:20%" href=""><i class="bi bi-printer-fill me-2"></i></a>
+                        <a class="btn btn-danger" style="width:20%" href="/Customer_Invoice/InvoicePayableRecord/@Row["Id"]"><i class="bi bi-pencil-fill me-2"></i></a>
+                        <button class="btn btn-primary" style="width:20%"><i class="bi bi-trash3-fill me-2"></i></button>
+                        <a class="btn btn-secondary" style="width:20%" href=""><i class="bi bi-printer-fill me-2"></i></a>
                     </td>
 
 
