@@ -17,6 +17,8 @@
 
 @code {
 
+    #region Setup Variables
+
     public TableClass tb_Invoice = new("[Invoice]");
     public DataTable Myinvoice;
     decimal Amount = 0.00M;
@@ -43,7 +45,7 @@
     public string TaxTitle { get; set; }
     public string PdfFile { get; set; }
 
-
+    #endregion
 
     protected override void OnInitialized()
     {
@@ -248,7 +250,7 @@
             ReportExport.Render();
             if (ReportExport.Variables.IsSaved)
             {
-                PdfFile = $"{rptParameters.OutputPath}{rptParameters.OutputFile}{rptParameters.OutputFileExtention}";
+                PdfFile = $"./PrintReports/{rptParameters.OutputFile}{rptParameters.OutputFileExtention}";
                 return PdfFile;
             }
         }
@@ -259,8 +261,6 @@
         return PdfFile;
     }
 
-
-    
     private void Add()
     {
         Model.ID = 0;
@@ -298,6 +298,11 @@
 
     private void Submit()
     {
+
+
+
+
+
         var a = Model.InvoiceNumber;
     }
 
@@ -458,24 +463,21 @@
                 <InputNumber @bind-Value="Model.NetAmount" step=".01" class="form-control" data-val="true" data-val-required="The NetAmount field is required." id="txtNetAmount"></InputNumber>
             </div>
         </div>
-        <div class="row mt-2 mb-2 justify-content-center">
-
-            
-            <button type="button" @onclick="Save" class="btn btn-success">Save</button>
-            <a class="btn btn-info" href="/Customer_Invoice/Invoice_Receivable">Back</a>
-            <a class="btn btn-info" href="file:///D:/AamirSource/AppliedTaxApp/AppliedTax/wwwroot/PrintReports/TaxSample.pdf" target="_blank">Print 1</a>
-            <a class="btn btn-info" href="@(()=> GetPDF())" target="_blank">Print 2</a>
-            
-            
-            <EditButton></EditButton>
-
-        </div>
+        <div class="row mt-2 mb-2 justify-content-center"></div>
 
     </EditForm>
+</div>
 
+<div>
 
+    <button type="button" @onclick="Save" class="btn btn-success">Save</button>
+    <button type="button" @onclick="()=>GetPDF()" class="btn btn-warning">Print</button>
+    <a class="btn btn-info" href="/Customer_Invoice/Invoice_Receivable">Back</a>
+    <a class="btn btn-info" href="./PrintReports/TaxSample.pdf" target="blank">Print 1</a>
+    <a href=@GetPDF() target="blank">GET PDF</a>
 
 </div>
+
 
 <div class="container">
     <table class="custom-table">
