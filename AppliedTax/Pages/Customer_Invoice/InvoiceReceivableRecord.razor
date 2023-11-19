@@ -5,7 +5,6 @@
 @using System.Data.SQLite;
 @using System.Text;
 @using AppReportClass;
-
 @using Microsoft.AspNetCore.Mvc.RazorPages;
 @using Microsoft.AspNetCore.Mvc;
 @using Microsoft.Reporting.NETCore;
@@ -15,6 +14,20 @@
 <h1>Invoice Receivable Record</h1>
 
 @code {
+
+
+
+     private bool showDropdown = false;
+
+    private void Dropdown()
+    {
+        showDropdown = !showDropdown;
+    }
+
+
+
+
+    # region Setup Variables
 
     public TableClass tb_Invoice = new("[Invoice]");
     public DataTable Myinvoice;
@@ -40,8 +53,13 @@
     public string InventoryTitle { get; set; }
     public string CompanyTitle { get; set; }
     public string TaxTitle { get; set; }
+    public string PdfFile { get; set; }
+    public string ExcelFile { get; set; }
+    public string WordFile { get; set; }
+    public string HTMLFile { get; set; }
 
 
+    #endregion
 
     protected override void OnInitialized()
     {
@@ -246,7 +264,7 @@
             {
                 ShowReport($"{rptParameters.OutputPath}{rptParameters.OutputFile}{rptParameters.OutputFileExtention}");
                 ReportExport = null;
-                // report show in page;
+                
 
             }
 
@@ -264,10 +282,193 @@
         {
             var stream = new FileStream(_ReportPath, FileMode.Open);
             return new FileStreamResult(stream, "application/pdf");
+            return new FileStreamResult(stream, "application/xlsx");
+            return new FileStreamResult(stream, "application/docx");
+            return new FileStreamResult(stream, "application/html");
+
         }
             return new RedirectResult("/");
 
 
+    }
+
+    private string GetPDF()
+    {
+        DataTable _Table = new();
+        ReportParameters rptParameters = new();
+        List<ReportParameter> _Parameters = new List<ReportParameter>
+        {
+                new ReportParameter("CompanyName", "Applied Software House"),
+                new ReportParameter("Heading1", CompanyTitle),
+                new ReportParameter("Heading2", "Sales Tax Invocies"),
+                new ReportParameter("Footer", "Powered by Applied Software House"),
+                new ReportParameter("InvoiceCode", InvCode)
+        };
+
+        rptParameters.ReportPath = $"{Directory.GetCurrentDirectory()}\\wwwroot\\Reports\\";
+        rptParameters.ReportFile = "TaxSample.rdl";
+        rptParameters.ReportType = ReportType.Preview;
+
+        rptParameters.OutputFile = "TaxSample";                                                         // Do not Add Extention Type with File name.
+        rptParameters.OutputPath = $"{Directory.GetCurrentDirectory()}\\wwwroot\\PrintReports\\";
+
+        rptParameters.ReportData = Myinvoice;
+        rptParameters.DataSetName = "DataSet2";
+
+        rptParameters.DataParameters = _Parameters;
+
+        var ReportExport = new ExportReport(rptParameters);
+
+
+        // if report rdl file exist then work.
+        if (File.Exists($"{rptParameters.ReportPath}{rptParameters.ReportFile}"))
+        {
+            ReportExport.Render();
+            if (ReportExport.Variables.IsSaved)
+            {
+                PdfFile = $"./PrintReports/{rptParameters.OutputFile}{rptParameters.OutputFileExtention}";
+                return PdfFile;
+            }
+        }
+        else
+        {
+            MyMessage = "Report Not found to print";
+        }
+        return PdfFile;
+    }
+
+    private string GetExcel()
+    {
+        DataTable _Table = new();
+        ReportParameters rptParameters = new();
+        List<ReportParameter> _Parameters = new List<ReportParameter>
+        {
+                new ReportParameter("CompanyName", "Applied Software House"),
+                new ReportParameter("Heading1", CompanyTitle),
+                new ReportParameter("Heading2", "Sales Tax Invocies"),
+                new ReportParameter("Footer", "Powered by Applied Software House"),
+                new ReportParameter("InvoiceCode", InvCode)
+        };
+
+        rptParameters.ReportPath = $"{Directory.GetCurrentDirectory()}\\wwwroot\\Reports\\";
+        rptParameters.ReportFile = "TaxSample.rdl";
+        rptParameters.ReportType = ReportType.Excel;
+
+        rptParameters.OutputFile = "TaxSample";                                                         // Do not Add Extention Type with File name.
+        rptParameters.OutputPath = $"{Directory.GetCurrentDirectory()}\\wwwroot\\PrintReports\\";
+
+        rptParameters.ReportData = Myinvoice;
+        rptParameters.DataSetName = "DataSet2";
+
+        rptParameters.DataParameters = _Parameters;
+
+        var ReportExport = new ExportReport(rptParameters);
+
+
+        // if report rdl file exist then work.
+        if (File.Exists($"{rptParameters.ReportPath}{rptParameters.ReportFile}"))
+        {
+            ReportExport.Render();
+            if (ReportExport.Variables.IsSaved)
+            {
+                ExcelFile = $"./PrintReports/{rptParameters.OutputFile}{rptParameters.OutputFileExtention}";
+                return ExcelFile;
+            }
+        }
+        else
+        {
+            MyMessage = "Report Not found to print";
+        }
+        return ExcelFile;
+    }
+
+    private string GetWord()
+    {
+        DataTable _Table = new();
+        ReportParameters rptParameters = new();
+        List<ReportParameter> _Parameters = new List<ReportParameter>
+        {
+                new ReportParameter("CompanyName", "Applied Software House"),
+                new ReportParameter("Heading1", CompanyTitle),
+                new ReportParameter("Heading2", "Sales Tax Invocies"),
+                new ReportParameter("Footer", "Powered by Applied Software House"),
+                new ReportParameter("InvoiceCode", InvCode)
+        };
+
+        rptParameters.ReportPath = $"{Directory.GetCurrentDirectory()}\\wwwroot\\Reports\\";
+        rptParameters.ReportFile = "TaxSample.rdl";
+        rptParameters.ReportType = ReportType.Word;
+
+        rptParameters.OutputFile = "TaxSample";                                                         // Do not Add Extention Type with File name.
+        rptParameters.OutputPath = $"{Directory.GetCurrentDirectory()}\\wwwroot\\PrintReports\\";
+
+        rptParameters.ReportData = Myinvoice;
+        rptParameters.DataSetName = "DataSet2";
+
+        rptParameters.DataParameters = _Parameters;
+
+        var ReportExport = new ExportReport(rptParameters);
+
+
+        // if report rdl file exist then work.
+        if (File.Exists($"{rptParameters.ReportPath}{rptParameters.ReportFile}"))
+        {
+            ReportExport.Render();
+            if (ReportExport.Variables.IsSaved)
+            {
+                WordFile = $"./PrintReports/{rptParameters.OutputFile}{rptParameters.OutputFileExtention}";
+                return WordFile;
+            }
+        }
+        else
+        {
+            MyMessage = "Report Not found to print";
+        }
+        return WordFile;
+    }
+    private string GetHTML()
+    {
+        DataTable _Table = new();
+        ReportParameters rptParameters = new();
+        List<ReportParameter> _Parameters = new List<ReportParameter>
+        {
+                new ReportParameter("CompanyName", "Applied Software House"),
+                new ReportParameter("Heading1", CompanyTitle),
+                new ReportParameter("Heading2", "Sales Tax Invocies"),
+                new ReportParameter("Footer", "Powered by Applied Software House"),
+                new ReportParameter("InvoiceCode", InvCode)
+        };
+
+        rptParameters.ReportPath = $"{Directory.GetCurrentDirectory()}\\wwwroot\\Reports\\";
+        rptParameters.ReportFile = "TaxSample.rdl";
+        rptParameters.ReportType = ReportType.HTML;
+
+        rptParameters.OutputFile = "TaxSample";                                                         // Do not Add Extention Type with File name.
+        rptParameters.OutputPath = $"{Directory.GetCurrentDirectory()}\\wwwroot\\PrintReports\\";
+
+        rptParameters.ReportData = Myinvoice;
+        rptParameters.DataSetName = "DataSet2";
+
+        rptParameters.DataParameters = _Parameters;
+
+        var ReportExport = new ExportReport(rptParameters);
+
+
+        // if report rdl file exist then work.
+        if (File.Exists($"{rptParameters.ReportPath}{rptParameters.ReportFile}"))
+        {
+            ReportExport.Render();
+            if (ReportExport.Variables.IsSaved)
+            {
+                HTMLFile = $"./PrintReports/{rptParameters.OutputFile}{rptParameters.OutputFileExtention}";
+                return HTMLFile;
+            }
+        }
+        else
+        {
+            MyMessage = "Report Not found to print";
+        }
+        return HTMLFile;
     }
 
     private void Add()
@@ -469,13 +670,44 @@
         </div>
         <div class="row mt-2 mb-2 justify-content-center">
 
-            @* <button type="button" @onclick="Add" class="btn btn-primary">Add</button> *@
             <button type="button" @onclick="Save" class="btn btn-success">Save</button>
-            <button type="button" @onclick="Print" class="btn btn-warning">Print</button>
-            <a hidden class="btn btn-warning" type="button" href="/PrintReports/TaxSample.pdf" target="_blank">Print</a>
+            <a class="btn btn-warning" href=@GetPDF() target="blank">Print</a>
             <a class="btn btn-info" href="/Customer_Invoice/Invoice_Receivable">Back</a>
+            <div class="dropdown">
+                <button class="btn btn-info" @onclick="Dropdown">
+                    Print
+                    <i class="bi bi-printer"></i>
+                </button>
+                 @if (showDropdown)
+            {
+                <ul class="dropdown-menu show" data-popper-placement="bottom-start">
+                    <li><a class="btn border-0" href=@GetPDF() target="_blank">Preview</a></li>
+                    <li><a class="btn border-0" href=@GetPDF() target="_blank">PDF</a></li>
+                    <li><a class="btn border-0" href=@GetExcel() target="_blank">Excel</a></li>
+                    <li><a class="btn border-0" href=@GetWord() target="_blank">Word</a></li>
+                    <li><a class="btn border-0" href=@GetHTML() target="_blank">HTML</a></li>
+                        @*<li><button class="btn border-0">HTML</button></li>*@
+                </ul>
+            }
+            </div>
+            @*<button class="btn btn-info" @onclick="Dropdown">Print</button>
+
+            @if (showDropdown)
+            {
+                <div class="dropdown">
+                    <a href=@GetPDF() target="blank">Print</a>
+                    <a class="btn btn-warning" href=@GetPDF() target="blank">Print</a>
+                    <button class="dropbtn">Pdf</button>
+                    
+                </div>
+            }*@
+
+
 
         </div>
+        
+
+                
 
     </EditForm>
 

@@ -175,3 +175,11 @@ a, .btn-link {
     }
 
 
+.dropdown-menu {
+    position: absolute;
+    inset: 0px auto auto 0px;
+    transform: translate(0px, 40px);
+}
+.dropdown-menu a:hover {
+    background-color: grey;
+}
