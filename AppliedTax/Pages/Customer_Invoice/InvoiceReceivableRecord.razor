@@ -5,16 +5,19 @@
 @using System.Data.SQLite;
 @using System.Text;
 @using AppReportClass;
-
+@using Append.Blazor.Printing
 @using Microsoft.AspNetCore.Mvc.RazorPages;
 @using Microsoft.AspNetCore.Mvc;
 @using Microsoft.Reporting.NETCore;
 
 @inject NavigationManager _navigationManager
+@inject IPrintingService PrintingService
 
 <h1>Invoice Receivable Record</h1>
 
 @code {
+
+    #region Setup Variables
 
     public TableClass tb_Invoice = new("[Invoice]");
     public DataTable Myinvoice;
@@ -40,8 +43,9 @@
     public string InventoryTitle { get; set; }
     public string CompanyTitle { get; set; }
     public string TaxTitle { get; set; }
+    public string PdfFile { get; set; }
 
-
+    #endregion
 
     protected override void OnInitialized()
     {
@@ -212,7 +216,7 @@
         }
     }
 
-    private void Print()
+    private string GetPDF()
     {
         DataTable _Table = new();
         ReportParameters rptParameters = new();
@@ -239,35 +243,22 @@
 
         var ReportExport = new ExportReport(rptParameters);
 
+
+        // if report rdl file exist then work.
         if (File.Exists($"{rptParameters.ReportPath}{rptParameters.ReportFile}"))
         {
             ReportExport.Render();
             if (ReportExport.Variables.IsSaved)
             {
-                ShowReport($"{rptParameters.OutputPath}{rptParameters.OutputFile}{rptParameters.OutputFileExtention}");
-                ReportExport = null;
-                // report show in page;
-
+                PdfFile = $"./PrintReports/{rptParameters.OutputFile}{rptParameters.OutputFileExtention}";
+                return PdfFile;
             }
-
         }
         else
         {
             MyMessage = "Report Not found to print";
         }
-
-    }
-
-    private IActionResult ShowReport(string _ReportPath)
-    {
-        if (File.Exists(_ReportPath))
-        {
-            var stream = new FileStream(_ReportPath, FileMode.Open);
-            return new FileStreamResult(stream, "application/pdf");
-        }
-            return new RedirectResult("/");
-
-
+        return PdfFile;
     }
 
     private void Add()
@@ -307,6 +298,11 @@
 
     private void Submit()
     {
+
+
+
+
+
         var a = Model.InvoiceNumber;
     }
 
@@ -467,21 +463,21 @@
                 <InputNumber @bind-Value="Model.NetAmount" step=".01" class="form-control" data-val="true" data-val-required="The NetAmount field is required." id="txtNetAmount"></InputNumber>
             </div>
         </div>
-        <div class="row mt-2 mb-2 justify-content-center">
-
-            @* <button type="button" @onclick="Add" class="btn btn-primary">Add</button> *@
-            <button type="button" @onclick="Save" class="btn btn-success">Save</button>
-            <button type="button" @onclick="Print" class="btn btn-warning">Print</button>
-            <a hidden class="btn btn-warning" type="button" href="/PrintReports/TaxSample.pdf" target="_blank">Print</a>
-            <a class="btn btn-info" href="/Customer_Invoice/Invoice_Receivable">Back</a>
-
-        </div>
+        <div class="row mt-2 mb-2 justify-content-center"></div>
 
     </EditForm>
+</div>
 
+<div>
 
+    <button type="button" @onclick="Save" class="btn btn-success">Save</button>
+    <button type="button" @onclick="()=>GetPDF()" class="btn btn-warning">Print</button>
+    <a class="btn btn-info" href="/Customer_Invoice/Invoice_Receivable">Back</a>
+    <a class="btn btn-info" href="./PrintReports/TaxSample.pdf" target="blank">Print 1</a>
+    <a href=@GetPDF() target="blank">GET PDF</a>
 
 </div>
+
 
 <div class="container">
     <table class="custom-table">
