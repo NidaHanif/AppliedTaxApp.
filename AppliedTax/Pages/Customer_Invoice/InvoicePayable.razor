@@ -51,7 +51,7 @@
         <thead>
             <tr>
                 <th>Inv No.</th>
-                <th>Supplier Name</th>
+                <th>Customer Name</th>
                 <th>Inv Date</th>
                 <th>Payment Date</th>
                 <th>Qty</th>
@@ -68,7 +68,7 @@
             {
                 var Date1 = ((DateTime)Row["Invoice Date"]).ToString("dd-MMM-yyyy");
                 var Date2 = ((DateTime)Row["Payment Date"]).ToString("dd-MMM-yyyy");
-                var SupplierName = TableClass.GetTitle("Company", (long)Row["Company Id"]);
+                var CustomerName = TableClass.GetTitle("Company", (long)Row["Company Id"]);
                 var Quantity = ((long)Row["Quantity"]).ToString("###,###,###.##");
                 var Amount = ((long)Row["Amount"]).ToString("###,###,###,###");
                 var TaxAmount = ((long)Row["Tax Amount"]).ToString("###,###,###,###");
@@ -76,7 +76,7 @@
                 <tr>
 
                     <td>@Row["Invoice Number"]</td>
-                    <td>@SupplierName</td>
+                    <td>@CustomerName</td>
                     <td>@Date1</td>
                     <td>@Date2</td>
                     <td style="text-align:right; padding-right: 20px;">@Quantity</td>

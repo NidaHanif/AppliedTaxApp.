@@ -86,11 +86,12 @@ namespace AppReportClass
                 _ReportParameter.OutputFileName = $"{_ReportParameter.OutputFile}{_ReportParameter.OutputFileExtention}";
 
                 _ReportParameter.MyMessage = $"File length = {_ReportParameter.FileBytes.Length} ";
-                if (_ReportParameter.ReportType.Equals(ReportType.Preview) || _ReportParameter.ReportType.Equals(ReportType.PDF))
-                {
-                    _ReportParameter.ReportType = ReportType.PDF;
+                //if (_ReportParameter.ReportType.Equals(ReportType.Preview) || _ReportParameter.ReportType.Equals(ReportType.PDF))
+                //{
+                    //_ReportParameter.ReportType = ReportType.PDF;
                     _ReportParameter.IsSaved = SaveReport();
-                }
+                //}
+
                 return _ReportParameter.FileBytes;
             }
             return Array.Empty<byte>();

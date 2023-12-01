@@ -673,10 +673,9 @@
             <button type="button" @onclick="Save" class="btn btn-success">Save</button>
             <a class="btn btn-warning" href=@GetPDF() target="blank">Print</a>
             <a class="btn btn-info" href="/Customer_Invoice/Invoice_Receivable">Back</a>
-            <div class="dropdown">
-                <button class="btn btn-info" @onclick="Dropdown">
+            
+                <button class="btn btn-warning" @onclick="Dropdown">
                     Print
-                    <i class="bi bi-printer"></i>
                 </button>
                  @if (showDropdown)
             {
@@ -689,7 +688,6 @@
                         @*<li><button class="btn border-0">HTML</button></li>*@
                 </ul>
             }
-            </div>
             @*<button class="btn btn-info" @onclick="Dropdown">Print</button>
 
             @if (showDropdown)
