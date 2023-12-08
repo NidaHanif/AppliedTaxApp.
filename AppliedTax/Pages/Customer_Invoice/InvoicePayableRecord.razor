@@ -39,7 +39,7 @@
     decimal TotRate = 0.00M;
     decimal TotAmount = 0.00M;
     decimal TotTaxAmount = 0.00M;
-
+    public bool IsPrint { get; set; } = false;
 
 
     [Parameter]
@@ -283,22 +283,36 @@
 
     private IActionResult ShowReport(string _ReportPath)
     {
-        if (File.Exists(_ReportPath))
-        {
-            var stream = new FileStream(_ReportPath, FileMode.Open);
-            return new FileStreamResult(stream, "application/pdf");
-            return new FileStreamResult(stream, "application/xlsx");
-            return new FileStreamResult(stream, "application/docx");
-            return new FileStreamResult(stream, "application/html");
 
-        }
-        return new RedirectResult("/");
+        var stream = new FileStream(_ReportPath, FileMode.Open);
+        return new FileStreamResult(stream, "application/pdf");
+
+        //FileStream stream = new FileStream(_ReportPath, FileMode.Open);
+
+        //return File.Open(_ReportPath, FileMode.Open);
+
+
+        //if (File.Exists(_ReportPath))
+        //{
+        //    var stream = new FileStream(_ReportPath, FileMode.Open);
+        //    return new FileStreamResult(stream, "application/pdf");
+        //    return new FileStreamResult(stream, "application/xlsx");
+        //    return new FileStreamResult(stream, "application/docx");
+        //    return new FileStreamResult(stream, "application/html");
+
+        //    return File.Open(_ReportPath, FileMode.Open);    
+
+            
+        //}
+        //return new RedirectResult("/");
 
 
     }
 
-    private string GetPDF()
+    private string GetPDF(bool _IsPrint)
     {
+        if (!_IsPrint) { return ""; }                         // Return if button is in intializing.
+
         DataTable _Table = new();
         ReportParameters rptParameters = new();
         List<ReportParameter> _Parameters = new List<ReportParameter>
@@ -342,8 +356,10 @@
         return PdfFile;
     }
 
-    private string GetExcel()
+    private string GetExcel(bool _IsPrint)
     {
+        if (!_IsPrint) { return ""; }                         // Return if button is in intializing.
+
         DataTable _Table = new();
         ReportParameters rptParameters = new();
         List<ReportParameter> _Parameters = new List<ReportParameter>
@@ -387,8 +403,10 @@
         return ExcelFile;
     }
 
-    private string GetWord()
+    private string GetWord(bool _IsPrint)
     {
+        if (!_IsPrint) { return ""; }                         // Return if button is in intializing.
+
         DataTable _Table = new();
         ReportParameters rptParameters = new();
         List<ReportParameter> _Parameters = new List<ReportParameter>
@@ -431,8 +449,10 @@
         }
         return WordFile;
     }
-    private string GetHTML()
+    private string GetHTML(bool _IsPrint)
     {
+        if (!_IsPrint) { return ""; }                         // Return if button is in intializing.
+
         DataTable _Table = new();
         ReportParameters rptParameters = new();
         List<ReportParameter> _Parameters = new List<ReportParameter>
@@ -677,29 +697,28 @@
         <div class="row mt-2 mb-2 justify-content-center">
 
             <button type="button" @onclick="Save" class="btn btn-success">Save</button>
-            <a class="btn btn-warning" type="button" href=@GetPDF() target="blank">Print</a>
+            <button type="button" @onclick="Print" class="btn btn-warning">Click</button>
+            <a class="btn btn-warning" type="button" href=@(() => GetPDF(IsPrint)) target="blank">Print</a>
             <a class="btn btn-info" href="/Customer_Invoice/InvoicePayable">Back</a>
-            
-                <button class="btn btn-warning" @onclick="Dropdown">
-                    Print
-                </button>
-                @if (showDropdown)
-                {
-                    <ul class="dropdown-menu show" data-popper-placement="bottom-start">
-                        <li><a class="btn border-0" href=@GetPDF() target="_blank">Preview</a></li>
-                        <li><a class="btn border-0" href=@GetPDF() target="_blank">PDF</a></li>
-                        <li><a class="btn border-0" href=@GetExcel() target="_blank">Excel</a></li>
-                        <li><a class="btn border-0" href=@GetWord() target="_blank">Word</a></li>
-                        <li><a class="btn border-0" href=@GetHTML() target="_blank">HTML</a></li>
-                        @*<li><button class="btn border-0">HTML</button></li>*@
-                    </ul>
-                }
-            
 
+            <button class="btn btn-warning" @onclick="Dropdown">
+                Print
+            </button>
+            @if (showDropdown)
+            {
+                <ul class="dropdown-menu show" data-popper-placement="bottom-start">
+                    <li><a class="btn border-0" href=@(() => GetPDF(IsPrint)) target="_blank">Preview</a></li>
+                    <li><a class="btn border-0" href=@(() => GetPDF(IsPrint)) target="_blank">PDF</a></li>
+                    <li><a class="btn border-0" href=@(() => GetExcel(IsPrint)) target="_blank">Excel</a></li>
+                    <li><a class="btn border-0" href=@(() => GetWord(IsPrint)) target="_blank">Word</a></li>
+                    <li><a class="btn border-0" href=@(() => GetHTML(IsPrint)) target="_blank">HTML</a></li>
+                    @*<li><button class="btn border-0">HTML</button></li>*@
+                </ul>
+                
+
+            }
         </div>
     </EditForm>
-
-
 
 </div>
 
