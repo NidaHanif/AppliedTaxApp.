@@ -17,7 +17,7 @@
 
 
 
-     private bool showDropdown = false;
+    private bool showDropdown = false;
 
     private void Dropdown()
     {
@@ -49,17 +49,19 @@
     public DataTable Taxes = TableClass.GetTable("Taxes");
     public DataTable Products = TableClass.GetTable("Product");
     public DataTable CustomerName = TableClass.GetTable("Company");
-    public DataRow MyRow { get; set; }
-    public string InventoryTitle { get; set; }
-    public string CompanyTitle { get; set; }
-    public string TaxTitle { get; set; }
-    public string PdfFile { get; set; }
-    public string ExcelFile { get; set; }
-    public string WordFile { get; set; }
-    public string HTMLFile { get; set; }
+    public DataRow MyRow { get; set; } 
+    public string InventoryTitle { get; set; } = string.Empty;
+    public string CompanyTitle { get; set; } = string.Empty;
+    public string TaxTitle { get; set; } = string.Empty;
+    public string PdfFile { get; set; } = string.Empty;
+    public string ExcelFile { get; set; } = string.Empty;
+    public string WordFile { get; set; } = string.Empty;
+    public string HTMLFile { get; set; } = string.Empty;
+    public bool IsInitializing { get; set; } = true;
 
 
     #endregion
+
 
     protected override void OnInitialized()
     {
@@ -98,6 +100,7 @@
                 TotQty = Convert.ToDecimal(Myinvoice.Compute("SUM(Quantity)", ""));
                 TotRate = (decimal)Myinvoice.Compute("SUM(Rate)", "");
                 TotAmount = (decimal)Myinvoice.Compute("SUM(Amount)", "");
+                IsInitializing = false;
 
             }
         }
@@ -264,7 +267,7 @@
             {
                 ShowReport($"{rptParameters.OutputPath}{rptParameters.OutputFile}{rptParameters.OutputFileExtention}");
                 ReportExport = null;
-                
+
 
             }
 
@@ -287,13 +290,14 @@
             return new FileStreamResult(stream, "application/html");
 
         }
-            return new RedirectResult("/");
+        return new RedirectResult("/");
 
 
     }
 
     private string GetPDF()
     {
+        if (IsInitializing) { return ""; }
         DataTable _Table = new();
         ReportParameters rptParameters = new();
         List<ReportParameter> _Parameters = new List<ReportParameter>
@@ -336,9 +340,9 @@
         }
         return PdfFile;
     }
-
     private string GetExcel()
     {
+        if (IsInitializing) { return ""; }
         DataTable _Table = new();
         ReportParameters rptParameters = new();
         List<ReportParameter> _Parameters = new List<ReportParameter>
@@ -381,9 +385,9 @@
         }
         return ExcelFile;
     }
-
     private string GetWord()
     {
+        if (IsInitializing) { return ""; }
         DataTable _Table = new();
         ReportParameters rptParameters = new();
         List<ReportParameter> _Parameters = new List<ReportParameter>
@@ -428,6 +432,7 @@
     }
     private string GetHTML()
     {
+        if (IsInitializing) { return ""; }
         DataTable _Table = new();
         ReportParameters rptParameters = new();
         List<ReportParameter> _Parameters = new List<ReportParameter>
