@@ -269,10 +269,7 @@
             {
                 ShowReport($"{rptParameters.OutputPath}{rptParameters.OutputFile}{rptParameters.OutputFileExtention}");
                 ReportExport = null;
-
-
             }
-
         }
         else
         {
@@ -283,30 +280,8 @@
 
     private IActionResult ShowReport(string _ReportPath)
     {
-
         var stream = new FileStream(_ReportPath, FileMode.Open);
         return new FileStreamResult(stream, "application/pdf");
-
-        //FileStream stream = new FileStream(_ReportPath, FileMode.Open);
-
-        //return File.Open(_ReportPath, FileMode.Open);
-
-
-        //if (File.Exists(_ReportPath))
-        //{
-        //    var stream = new FileStream(_ReportPath, FileMode.Open);
-        //    return new FileStreamResult(stream, "application/pdf");
-        //    return new FileStreamResult(stream, "application/xlsx");
-        //    return new FileStreamResult(stream, "application/docx");
-        //    return new FileStreamResult(stream, "application/html");
-
-        //    return File.Open(_ReportPath, FileMode.Open);    
-
-            
-        //}
-        //return new RedirectResult("/");
-
-
     }
 
     private string GetPDF(bool _IsPrint)
