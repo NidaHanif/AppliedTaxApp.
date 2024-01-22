@@ -27,7 +27,7 @@
 
 
 
-    # region Setup Variables
+    #region Setup Variables
 
     public TableClass tb_Invoice = new("[Invoice]");
     public DataTable Myinvoice;
@@ -49,19 +49,17 @@
     public DataTable Taxes = TableClass.GetTable("Taxes");
     public DataTable Products = TableClass.GetTable("Product");
     public DataTable CustomerName = TableClass.GetTable("Company");
-    public DataRow MyRow { get; set; } 
-    public string InventoryTitle { get; set; } = string.Empty;
-    public string CompanyTitle { get; set; } = string.Empty;
-    public string TaxTitle { get; set; } = string.Empty;
-    public string PdfFile { get; set; } = string.Empty;
-    public string ExcelFile { get; set; } = string.Empty;
-    public string WordFile { get; set; } = string.Empty;
-    public string HTMLFile { get; set; } = string.Empty;
-    public bool IsInitializing { get; set; } = true;
+    public DataRow MyRow { get; set; }
+    public string InventoryTitle { get; set; }
+    public string CompanyTitle { get; set; }
+    public string TaxTitle { get; set; }
+    public string PdfFile { get; set; }
+    public string ExcelFile { get; set; }
+    public string WordFile { get; set; }
+    public string HTMLFile { get; set; }
 
 
     #endregion
-
 
     protected override void OnInitialized()
     {
@@ -100,7 +98,6 @@
                 TotQty = Convert.ToDecimal(Myinvoice.Compute("SUM(Quantity)", ""));
                 TotRate = (decimal)Myinvoice.Compute("SUM(Rate)", "");
                 TotAmount = (decimal)Myinvoice.Compute("SUM(Amount)", "");
-                IsInitializing = false;
 
             }
         }
@@ -297,7 +294,6 @@
 
     private string GetPDF()
     {
-        if (IsInitializing) { return ""; }
         DataTable _Table = new();
         ReportParameters rptParameters = new();
         List<ReportParameter> _Parameters = new List<ReportParameter>
@@ -340,9 +336,9 @@
         }
         return PdfFile;
     }
+
     private string GetExcel()
     {
-        if (IsInitializing) { return ""; }
         DataTable _Table = new();
         ReportParameters rptParameters = new();
         List<ReportParameter> _Parameters = new List<ReportParameter>
@@ -385,9 +381,9 @@
         }
         return ExcelFile;
     }
+
     private string GetWord()
     {
-        if (IsInitializing) { return ""; }
         DataTable _Table = new();
         ReportParameters rptParameters = new();
         List<ReportParameter> _Parameters = new List<ReportParameter>
@@ -432,7 +428,6 @@
     }
     private string GetHTML()
     {
-        if (IsInitializing) { return ""; }
         DataTable _Table = new();
         ReportParameters rptParameters = new();
         List<ReportParameter> _Parameters = new List<ReportParameter>
@@ -580,6 +575,8 @@
 
 }
 
+
+
 @MyMessage;
 
 <div class="container">
@@ -676,11 +673,11 @@
             <button type="button" @onclick="Save" class="btn btn-success">Save</button>
             <a class="btn btn-warning" href=@GetPDF() target="blank">Print</a>
             <a class="btn btn-info" href="/Customer_Invoice/Invoice_Receivable">Back</a>
-            
-                <button class="btn btn-warning" @onclick="Dropdown">
-                    Print
-                </button>
-                 @if (showDropdown)
+
+            <button class="btn btn-warning" @onclick="Dropdown">
+                Print
+            </button>
+            @if (showDropdown)
             {
                 <ul class="dropdown-menu show" data-popper-placement="bottom-start">
                     <li><a class="btn border-0" href=@GetPDF() target="_blank">Preview</a></li>
@@ -688,27 +685,27 @@
                     <li><a class="btn border-0" href=@GetExcel() target="_blank">Excel</a></li>
                     <li><a class="btn border-0" href=@GetWord() target="_blank">Word</a></li>
                     <li><a class="btn border-0" href=@GetHTML() target="_blank">HTML</a></li>
-                        @*<li><button class="btn border-0">HTML</button></li>*@
+                    @*<li><button class="btn border-0">HTML</button></li>*@
                 </ul>
             }
             @*<button class="btn btn-info" @onclick="Dropdown">Print</button>
 
             @if (showDropdown)
             {
-                <div class="dropdown">
-                    <a href=@GetPDF() target="blank">Print</a>
-                    <a class="btn btn-warning" href=@GetPDF() target="blank">Print</a>
-                    <button class="dropbtn">Pdf</button>
-                    
-                </div>
+            <div class="dropdown">
+            <a href=@GetPDF() target="blank">Print</a>
+            <a class="btn btn-warning" href=@GetPDF() target="blank">Print</a>
+            <button class="dropbtn">Pdf</button>
+
+            </div>
             }*@
 
 
 
         </div>
-        
 
-                
+
+
 
     </EditForm>
 
@@ -764,7 +761,6 @@
                             |<button type="submit" @onclick='() => Delete((long)Row["ID"])' class="btn btn-dangerous"><i class="bi bi-trash3" style=" color: red;margin-right:5px"></i></button>
                         </td>
                         <td></td>
-
                     </tr>
                 }
 

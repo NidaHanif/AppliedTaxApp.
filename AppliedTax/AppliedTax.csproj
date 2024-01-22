@@ -19,6 +19,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Remove="Pages\Tax Submission\TaxSubmission.razor" />
     <Content Remove="wwwroot\Reports\TaxSample.rdl" />
   </ItemGroup>
 
@@ -35,6 +36,18 @@
 
   <ItemGroup>
     <ProjectReference Include="..\AppReporting\AppReportClass.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <UpToDateCheckInput Remove="Pages\Tax Submission\TaxSubmission.razor" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <_ContentIncludedByDefault Remove="Pages\Tax Submission\TaxSubmission.razor" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="Pages\Tax Submission\TaxSubmission.razor" />
   </ItemGroup>
 
 </Project>
