@@ -1,36 +1,56 @@
-﻿@page "/Directory/ProductRecord"
-@page "/Directory/ProductRecord/{ID}"
+﻿@page "/Directory/ProductRecord/{ID}"
 
-
+@using System.IO;
 @using AppliedTax.Codes;
 @using System.Data;
+@using System.Data.SQLite;
+@using System.Text;
+@using AppReportClass;
+@using Microsoft.AspNetCore.Mvc.RazorPages;
+@using Microsoft.AspNetCore.Mvc;
+@using Microsoft.Reporting.NETCore;
 
 <h1>Product Record</h1>
 
+@inject NavigationManager _navigationManager
+
 @code {
+    public TableClass tb_Product = new("[Product]");
+    public DataTable Myinvoice;
+
     [Parameter]
     public int ID { get; set; }
     public Parameters Model { get; set; }
     public TableClass MyTableClass => new TableClass("Product");
     public DataRow MyRow { get; set; }
+    public string MyMessage = String.Empty;
 
     protected override void OnInitialized()
     {
         Model = new();
 
-        if(ID==0) { ID = 1; }
+        if (ID == 0) { ID = 1; }
         MyRow = TableClass.GetRow("Product", ID);
-
         Model.ID = (long)MyRow["ID"];
         Model.Code = MyRow["Title"].ToString();
         Model.Title = MyRow["Code"].ToString();
         Model.Class = MyRow["Class"].ToString();
-        
         Model.Description = MyRow["Description"].ToString();
         Model.TC_ID = (long)MyRow["TC_ID"];
         Model.HSCode = MyRow["HSCode"].ToString();
 
     }
+    private DataTable GetInvoice()
+    {
+        tb_Product = new("Product");
+        tb_Product.MyDataView.RowFilter = $"[Invoice Code] = '{Model.Code}'";
+        if (tb_Product.MyDataView.Count > 0)
+        {
+            return tb_Product.MyDataView.ToTable();
+        }
+        return tb_Product.MyDataTable.Clone();
+    }
+
     private void Submit()
     {
         var a = Model.Title;
@@ -46,46 +66,116 @@
         public string Description { get; set; }
         public long TC_ID { get; set; }
         public string HSCode { get; set; }
-
     }
 
+    private void Model2Row()
+    {
+        MyRow["ID"] = Model.ID;
+        MyRow["Code"] = Model.Code;
+        MyRow["Title"] = Model.Title;
+        MyRow["Class"] = Model.Class;
+        MyRow["Unit"] = Model.Unit;
+        MyRow["Description"] = Model.Description;
+        MyRow["TC_ID"] = Model.TC_ID;
+        MyRow["HSCode"] = Model.HSCode;
+    }
 
+    private void Save()
+    {
+        Model2Row();
+        string _TableName = MyRow.Table.TableName;
+        long _ID = (long)MyRow["ID"];
+        int _Effected;
+        TableClass _Table = new("Product");
+        string _Filter = $"[ID]={_ID}";
+        _Table.MyDataView.RowFilter = _Filter;
+        if (_Table.MyDataView.Count == 1)
+        {
+            var _Command = new SQLiteCommand(ConnectionClass.GetConnected());
+            var _Text = new StringBuilder();
+            _Text.Append($"UPDATE [{_TableName}] SET ");
+            _Text.Append($"ID={MyRow["ID"]}, ");
+            _Text.Append($"[Code]='{MyRow["Code"]}', ");
+            _Text.Append($"[Title]={MyRow["Title"]},");
+            _Text.Append($"Class={MyRow["Class"]},");
+            _Text.Append($"Unit={MyRow["Unit"]},");
+            _Text.Append($"Description={MyRow["Description"]},");
+            _Text.Append($"TC_ID={MyRow["TC_ID"]},");
+            _Text.Append($"[HSCode]={MyRow["HSCode"]},");
+            _Command = new(_Text.ToString(), ConnectionClass.GetConnected());
+            _Effected = _Command.ExecuteNonQuery();
+            if (_Effected > 0)
+            {
+                MyMessage = $"{_Effected} Row(s) effected updated successfully.";
+            }
+        }
+        else
+        {
+            var _Command = new SQLiteCommand(ConnectionClass.GetConnected());
+            var _Text = new StringBuilder();
+            _Text.Append($"INSERT INTO [{_TableName}] VALUES ({ID},");
+            _Text.Append($"'{MyRow["Code"]}',");
+            _Text.Append($"'{MyRow["Title"]}',");
+            _Text.Append($"'{MyRow["Title"]}',");
+            _Text.Append($"'{MyRow["Class"]}',");
+            _Text.Append($"'{MyRow["Unit"]}',");
+            _Text.Append($"'{MyRow["Description"]}',");
+            _Text.Append($"{MyRow["TC_ID"]},");
+            _Text.Append($"{MyRow["HSCode"]},");
+            try
+            {
+                _Command = new(_Text.ToString(), ConnectionClass.GetConnected());
+                _Effected = _Command.ExecuteNonQuery();
+                if (_Effected > 0)
+                {
+                    MyMessage = $"{_Effected} Row(s) effected inserted successfully.";
+                }
+            }
+            catch (Exception e)
+            {
+                MyMessage = e.Message;
+            }
+        }
+        Myinvoice = GetInvoice();
+    }
 }
+
+@MyMessage;
 
 <EditForm Model="@Model" OnSubmit="@Submit">
     <div class="row">
-    <div class="col-md-2">
-        <label>Code</label>
-        <InputText @bind-Value="Model.Code" class="form-control" data-val="true" data-val-required="The Code field is required." id="txtCode" ></InputText>
-    </div>
-    <div class="col-md-2">
-        <label>Title</label>
-        <InputText @bind-Value="Model.Title" class="form-control" data-val="true" data-val-required="The Code field is required." id="txtTitle"></InputText>
-    </div>
-    <div class="col-md-2">
-        <label>Class</label>
-        <InputText @bind-Value="Model.Class" class="form-control" data-val="true" data-val-required="The Class field is required." id="txtClass"></InputText>
-    </div>
+        <div class="col-md-2">
+            <label>Code</label>
+            <InputText @bind-Value="Model.Code" class="form-control" data-val="true" data-val-required="The Code field is required." id="txtCode"></InputText>
+        </div>
+        <div class="col-md-2">
+            <label>Title</label>
+            <InputText @bind-Value="Model.Title" class="form-control" data-val="true" data-val-required="The Code field is required." id="txtTitle"></InputText>
+        </div>
+        <div class="col-md-2">
+            <label>Class</label>
+            <InputText @bind-Value="Model.Class" class="form-control" data-val="true" data-val-required="The Class field is required." id="txtClass"></InputText>
+        </div>
     </div>
     <div class="row">
-    <div class="col-md-2">
-        <label>Unit</label>
-        <InputNumber @bind-Value="Model.Unit" class="form-control" data-val="true" data-val-required="The Unit field is required." id="txtUnit"></InputNumber>
-    </div>
-    <div class="col-md-2">
-        <label>Description</label>
-        <InputText @bind-Value="Model.Description" class="form-control" data-val="true" data-val-required="The Description field is required." id="txtDescription"></InputText>
+        <div class="col-md-2">
+            <label>Unit</label>
+            <InputNumber @bind-Value="Model.Unit" class="form-control" data-val="true" data-val-required="The Unit field is required." id="txtUnit"></InputNumber>
+        </div>
+        <div class="col-md-2">
+            <label>Description</label>
+            <InputText @bind-Value="Model.Description" class="form-control" data-val="true" data-val-required="The Description field is required." id="txtDescription"></InputText>
 
-    </div>
-    <div class="col-md-2">
-        <label>TC_ID</label>
-        <InputNumber @bind-Value="Model.TC_ID" class="form-control" data-val="true" data-val-required="The TC_ID field is required." id="txtTC_ID"></InputNumber>
-    </div>
+        </div>
+        <div class="col-md-2">
+            <label>TC_ID</label>
+            <InputNumber @bind-Value="Model.TC_ID" class="form-control" data-val="true" data-val-required="The TC_ID field is required." id="txtTC_ID"></InputNumber>
+        </div>
     </div>
     <div class="col-md-2">
         <label>HSCode</label>
         <InputText @bind-Value="Model.HSCode" class="form-control" data-val="true" data-val-required="The HSCode field is required." id="txtHSCode"></InputText>
     </div>
-    <button type="button" class="btn btn-primary">Submit</button>.
-
+    <button type="button" @onclick="Submit" class="btn btn-primary">Submit</button>.
+    
 </EditForm>

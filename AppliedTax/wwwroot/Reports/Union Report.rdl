@@ -10,43 +10,27 @@
         <IntegratedSecurity>true</IntegratedSecurity>
       </ConnectionProperties>
       <rd:SecurityType>Integrated</rd:SecurityType>
-      <rd:DataSourceID>17088ae4-e669-4b01-8bc0-5c4f6a3f46d6</rd:DataSourceID>
+      <rd:DataSourceID>eeb494e5-5011-4e21-a4ff-63ce1d12f476</rd:DataSourceID>
     </DataSource>
   </DataSources>
   <DataSets>
     <DataSet Name="DataSet2">
       <Query>
         <DataSourceName>DataSource1</DataSourceName>
-        <CommandText>SELECT
-[C].[NTN Number] AS [RegNo],
-[C].[Title]      AS [Supplier Name],
-'Registered'     AS [Supplier Type],
+        <CommandText>select * from (
+select 'REC' AS [INVTYPE],* from GST_Receivable
+UNION
+SELECT 'PAY' AS [INVTYPE],* FROM GST_Payable)
 
-[C].[City] AS [City],
-[C].[Country] AS [Country],
-
-[T].[Title] AS [Tax Type],
-[I].[Invoice Number] AS [Invoice Number],
-[I].[Invoice Date] AS [Inv Date],
-[I].[Payment Date] AS [Payment Date],
-[P].[HSCode] AS [HSCode],
-
-[T].[Title] AS [Sale Type],
-[T].[Rate] AS [TaxRate],
-[I].[Quantity] AS [Quantity],
-
-[I].[Amount] AS [Amount],
-[I].[Tax Amount] AS [Tax Amount],
-[I].[Net Amount] AS [Net Amount]
-
-
-FROM [Invoice][I]
-LEFT JOIN [Company] [C] ON[C].[ID] = [I].[Company ID]
-LEFT JOIN [Taxes]   [T] ON[T].[ID] = [I].[TaxID]
-LEFT JOIN [Product] [P] ON[P].[ID] = [I].[Company ID]</CommandText>
+WHERE Date([Inv Date]) &gt;= Date('2023-01-01') AND Date([Inv Date]) &lt;= Date('2023-12-31')
+ORDER BY [Inv Date]</CommandText>
         <rd:UseGenericDesigner>true</rd:UseGenericDesigner>
       </Query>
       <Fields>
+        <Field Name="INVTYPE">
+          <DataField>INVTYPE</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
         <Field Name="RegNo">
           <DataField>RegNo</DataField>
           <rd:TypeName>System.Int32</rd:TypeName>
@@ -234,6 +218,9 @@ LEFT JOIN [Product] [P] ON[P].[ID] = [I].[Company ID]</CommandText>
             <TablixBody>
               <TablixColumns>
                 <TablixColumn>
+                  <Width>1in</Width>
+                </TablixColumn>
+                <TablixColumn>
                   <Width>0.77083in</Width>
                 </TablixColumn>
                 <TablixColumn>
@@ -288,6 +275,41 @@ LEFT JOIN [Product] [P] ON[P].[ID] = [I].[Company ID]</CommandText>
                   <TablixCells>
                     <TablixCell>
                       <CellContents>
+                        <Textbox Name="Textbox56">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>INV TYPE</Value>
+                                  <Style>
+                                    <FontWeight>Bold</FontWeight>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style>
+                                <TextAlign>Center</TextAlign>
+                              </Style>
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>Textbox56</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Color>LightGrey</Color>
+                              <Style>Solid</Style>
+                            </Border>
+                            <VerticalAlign>Middle</VerticalAlign>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
                         <Textbox Name="Textbox76">
                           <CanGrow>true</CanGrow>
                           <KeepTogether>true</KeepTogether>
@@ -330,7 +352,7 @@ LEFT JOIN [Product] [P] ON[P].[ID] = [I].[Company ID]</CommandText>
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value>Supplier Name</Value>
+                                  <Value>Name</Value>
                                   <Style>
                                     <FontWeight>Bold</FontWeight>
                                   </Style>
@@ -365,7 +387,7 @@ LEFT JOIN [Product] [P] ON[P].[ID] = [I].[Company ID]</CommandText>
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value>Supplier Type</Value>
+                                  <Value>Type</Value>
                                   <Style>
                                     <FontWeight>Bold</FontWeight>
                                   </Style>
@@ -864,6 +886,38 @@ LEFT JOIN [Product] [P] ON[P].[ID] = [I].[Company ID]</CommandText>
                 <TablixRow>
                   <Height>0.25in</Height>
                   <TablixCells>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Textbox57">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value />
+                                  <Style>
+                                    <FontFamily>Arial</FontFamily>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>Textbox57</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Color>LightGrey</Color>
+                              <Style>Solid</Style>
+                            </Border>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
                     <TablixCell>
                       <CellContents>
                         <Textbox Name="Textbox142">
@@ -1381,6 +1435,39 @@ LEFT JOIN [Product] [P] ON[P].[ID] = [I].[Company ID]</CommandText>
                 <TablixRow>
                   <Height>0.25in</Height>
                   <TablixCells>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="INVTYPE">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Fields!INVTYPE.Value</Value>
+                                  <Style />
+                                </TextRun>
+                              </TextRuns>
+                              <Style>
+                                <TextAlign>Center</TextAlign>
+                              </Style>
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>INVTYPE</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Color>LightGrey</Color>
+                              <Style>Solid</Style>
+                            </Border>
+                            <VerticalAlign>Middle</VerticalAlign>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
                     <TablixCell>
                       <CellContents>
                         <Textbox Name="RegNo">
@@ -1959,6 +2046,7 @@ LEFT JOIN [Product] [P] ON[P].[ID] = [I].[Company ID]</CommandText>
                 <TablixMember />
                 <TablixMember />
                 <TablixMember />
+                <TablixMember />
               </TablixMembers>
             </TablixColumnHierarchy>
             <TablixRowHierarchy>
@@ -1978,7 +2066,7 @@ LEFT JOIN [Product] [P] ON[P].[ID] = [I].[Company ID]</CommandText>
             <Top>1.83208in</Top>
             <Left>0.00917in</Left>
             <Height>0.75in</Height>
-            <Width>14.68874in</Width>
+            <Width>15.68874in</Width>
             <ZIndex>4</ZIndex>
             <Style>
               <Border>
@@ -1987,21 +2075,21 @@ LEFT JOIN [Product] [P] ON[P].[ID] = [I].[Company ID]</CommandText>
             </Style>
           </Tablix>
         </ReportItems>
-        <Height>3.11333in</Height>
+        <Height>2.58208in</Height>
         <Style>
           <Border>
             <Style>None</Style>
           </Border>
         </Style>
       </Body>
-      <Width>16.00917in</Width>
+      <Width>15.69791in</Width>
       <Page>
         <PageFooter>
-          <Height>0.45in</Height>
+          <Height>1.21042in</Height>
           <PrintOnFirstPage>true</PrintOnFirstPage>
           <PrintOnLastPage>true</PrintOnLastPage>
           <ReportItems>
-            <Textbox Name="ExecutionTime">
+            <Textbox Name="ExecutionTime2">
               <CanGrow>true</CanGrow>
               <KeepTogether>true</KeepTogether>
               <Paragraphs>
@@ -2018,8 +2106,8 @@ LEFT JOIN [Product] [P] ON[P].[ID] = [I].[Company ID]</CommandText>
                 </Paragraph>
               </Paragraphs>
               <rd:DefaultName>ExecutionTime</rd:DefaultName>
-              <Top>0.2in</Top>
-              <Left>8.51531in</Left>
+              <Top>0.73021in</Top>
+              <Left>9.37846in</Left>
               <Height>0.25in</Height>
               <Width>2in</Width>
               <Style>
@@ -2051,8 +2139,8 @@ LEFT JOIN [Product] [P] ON[P].[ID] = [I].[Company ID]</CommandText>
                 </Paragraph>
               </Paragraphs>
               <rd:DefaultName>Textbox98</rd:DefaultName>
-              <Top>0.2in</Top>
-              <Left>4.95976in</Left>
+              <Top>0.73021in</Top>
+              <Left>5.82291in</Left>
               <Height>0.25in</Height>
               <Width>3.5in</Width>
               <ZIndex>1</ZIndex>
@@ -2245,5 +2333,5 @@ zO+pJ3EN+UW+TV/IH9NPIP9A/sp1tt94pj9N+a0fDzlMnsF6Whs5Vf6yJ2dlnsV+UuY/qaOBL/pN8+f0
     </EmbeddedImage>
   </EmbeddedImages>
   <rd:ReportUnitType>Inch</rd:ReportUnitType>
-  <rd:ReportID>deb146fc-1b59-4bcf-b67a-480555214bb2</rd:ReportID>
+  <rd:ReportID>65386cef-e821-4632-9efe-1f45314f8068</rd:ReportID>
 </Report>

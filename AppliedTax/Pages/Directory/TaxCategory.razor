@@ -1,6 +1,8 @@
 ﻿@page "/Directory/TaxCategory"
 @using AppliedTax.Codes;
 @using System.Data;
+@using System.Data.SQLite;
+@using System.Text;
 
 <h1>
     Tax Category Rate
@@ -8,6 +10,37 @@
 
 @code {
     public TableClass tb_Taxes = new("[TaxCategory]");
+
+
+    [Parameter]
+    public long InvID { get; set; }
+    public string MyMessage = String.Empty;
+
+
+
+    private void Delete(long ID)
+    {
+        if (ID > 0)
+        {
+
+            var TextDelete = "DELETE FROM [TaxCategory] WHERE [ID] = @ID";
+            var SQLCommand = new SQLiteCommand(TextDelete, ConnectionClass.GetConnected());
+            SQLCommand.Parameters.AddWithValue("@ID", ID);
+            var effected = SQLCommand.ExecuteNonQuery();
+            if (effected > 0)
+            {
+                MyMessage = "Record has been deleted successfully";
+            }
+            else
+            {
+                MyMessage = "Record not deleted.";
+            }
+        }
+        else
+        {
+            MyMessage = "Value id not more than zero";
+        }
+    }
 
 }
 
@@ -18,23 +51,22 @@
                 <th>Code</th>
                 <th>Title</th>
                 <th>Description</th>
-                <th></th>
-                <th><button class="btn btn-light"><i class="bi bi-plus me-2"></i>Add</button></th>
+                <th><button class="btn btn-success btn-By"><i class="bi bi-plus me-2"></i></button></th>
             </tr>
         </thead>
         <tbody>
-
             @foreach (DataRow Row in tb_Taxes.MyDataTable.Rows)
             {
                 <tr>
                     <td>@Row["Code"]</td>
                     <td>@Row["Title"]</td>
                     <td>@Row["Description"]</td>
-                    <td><a class="btn btn-danger" href="/Directory/TaxCategoryRecord"><i class="bi bi-pencil me-2"></i>Edit</a></td>
-                    <td><button class="btn btn-primary"><i class="bi bi-trash3 me-2"></i>Delete</button></td>
+                    <td>
+                        <a class="btn btn-danger" style="width:20%" href="/Directory/TaxCategoryRecord"><i class="bi bi-pencil-fill me-2"></i></a>
+                        <button type="submit" @onclick='() => Delete((long)Row["ID"])' class="btn btn-primary" style="width:20%"><i class="bi bi-trash3-fill me-2"></i></button>
+                    </td>
                 </tr>
             }
         </tbody>
-        <tfoot></tfoot>
     </table>
 </div>

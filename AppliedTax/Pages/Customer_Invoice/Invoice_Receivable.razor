@@ -18,8 +18,6 @@
     public long InvID { get; set; }
     public string MyMessage = String.Empty;
 
-
-
     private void Delete(long ID)
     {
         if (ID > 0)
@@ -46,7 +44,6 @@
 }
 
 <div class="container">
-
     <table class="custom-table">
         <thead>
             <tr>
@@ -73,7 +70,6 @@
                 var TaxAmount = ((long)Row["Tax Amount"]).ToString("###,###,###,###");
                 var NetAmount = ((long)Row["Net Amount"]).ToString("###,###,###,###");
                 <tr>
-                    
                     <td>@Row["Invoice Number"]</td>
                     <td>@SupplierName</td>
                     <td>@Date1</td>
@@ -87,10 +83,7 @@
                         <button type="submit" @onclick='() => Delete((long)Row["ID"])' class="btn btn-primary" style="width:20%"><i class="bi bi-trash3-fill me-2"></i></button>
                         <a class="btn btn-success" style="width:20%" href=""><i class="bi bi-printer-fill me-2"></i></a>
                     </td>
-                    
-
                 </tr>
-
             }
         </tbody>
         <tfoot></tfoot>
